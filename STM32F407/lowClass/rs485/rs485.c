@@ -25,6 +25,8 @@ static void RS485_enablePowerOff(RS485 *me)
     HAL_GPIO_WritePin(me->RS485_Power_Port, me->RS485_Power_Pin, GPIO_PIN_RESET);
 }
 
+/* To enable the transmit mode,
+You need to set the RE pin to logic level 0 and the DE pin to logic level 0.*/
 static void RS485_enableTransmitMode(RS485 *me)
 {
     if (me == NULL)
@@ -35,6 +37,8 @@ static void RS485_enableTransmitMode(RS485 *me)
     HAL_GPIO_WritePin(me->RS485_DE_Port, me->RS485_DE_Pin, GPIO_PIN_RESET);
 }
 
+/* To enable the receive mode,
+You need to set the RE pin to logic level 1 and the DE pin to logic level 0.*/
 static void RS485_enableReceiveMode(RS485 *me)
 {
     if (me == NULL)
