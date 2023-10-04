@@ -1,6 +1,6 @@
 ../TuBu/RS485/RS485.c:6:6:RS485_EnablePin	16	static
 ../TuBu/RS485/RS485.c:11:10:crcCalculation	32	static
 ../TuBu/RS485/RS485.c:40:6:RS485_transmit	40	static
-../TuBu/RS485/RS485.c:70:6:RS485_ForceSingleCoil	32	static
-../TuBu/RS485/RS485.c:87:13:RS485_analysis	72	static
-../TuBu/RS485/RS485.c:187:6:RS485_Master_Receive	40	static
+../TuBu/RS485/RS485.c:66:6:RS485_ForceSingleCoil	32	static
+../TuBu/RS485/RS485.c:84:13:RS485_analysis	72	static
+../TuBu/RS485/RS485.c:184:6:RS485_Master_Receive	40	static
