@@ -35,10 +35,10 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FatFs/src/ff_gen_drv.h \
  ../Middlewares/Third_Party/FatFs/src/diskio.h \
  ../Middlewares/Third_Party/FatFs/src/ff.h ../FATFS/Target/sd_diskio.h \
- C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/SIM7x00/sim7x00.h \
- C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/FOTA/fota.h \
- C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/FLASH/flash.h \
- C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/RS485/RS485.h
+ G:/TU-BU-IOT/Tu_bu_moi_2/TuBu/SIM7x00/sim7x00.h \
+ G:/TU-BU-IOT/Tu_bu_moi_2/TuBu/FOTA/fota.h \
+ G:/TU-BU-IOT/Tu_bu_moi_2/TuBu/FLASH/flash.h \
+ G:/TU-BU-IOT/Tu_bu_moi_2/TuBu/RS485/RS485.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -80,7 +80,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Middlewares/Third_Party/FatFs/src/diskio.h:
 ../Middlewares/Third_Party/FatFs/src/ff.h:
 ../FATFS/Target/sd_diskio.h:
-C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/SIM7x00/sim7x00.h:
-C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/FOTA/fota.h:
-C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/FLASH/flash.h:
-C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/RS485/RS485.h:
+G:/TU-BU-IOT/Tu_bu_moi_2/TuBu/SIM7x00/sim7x00.h:
+G:/TU-BU-IOT/Tu_bu_moi_2/TuBu/FOTA/fota.h:
+G:/TU-BU-IOT/Tu_bu_moi_2/TuBu/FLASH/flash.h:
+G:/TU-BU-IOT/Tu_bu_moi_2/TuBu/RS485/RS485.h:

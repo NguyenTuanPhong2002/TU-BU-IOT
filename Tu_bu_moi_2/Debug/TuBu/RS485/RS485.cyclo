@@ -1,0 +1,6 @@
+RS485.c:6:6:RS485_EnablePin	1
+RS485.c:11:10:crcCalculation	4
+RS485.c:40:6:RS485_transmit	7
+RS485.c:66:6:RS485_ForceSingleCoil	2
+RS485.c:84:13:RS485_analysis	18
+RS485.c:184:6:RS485_Master_Receive	8
