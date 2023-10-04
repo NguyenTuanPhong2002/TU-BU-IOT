@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "g:/TU-BU-IOT/STM32F407/lowClass/Sim7600",
-      "program": "g:/TU-BU-IOT/STM32F407/lowClass/Sim7600/build/Debug/outDebug",
+      "cwd": "g:/TU-BU-IOT",
+      "program": "g:/TU-BU-IOT/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
