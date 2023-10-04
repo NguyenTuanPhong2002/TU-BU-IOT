@@ -1,12 +1,16 @@
 /*
- * rs485.cpp
+ * rs485.c
  *
  *  Created on: Sep 11, 2023
- *      Author: TRUNG
+ *      Author: Trump2003
  */
 #include "RS485.h"
 #include "string.h"
-
+/**
+ * @brief 
+ * 
+ * @param me 
+ */
 static void RS485_enablePowerOn(RS485 *me)
 {
     if (me == NULL)

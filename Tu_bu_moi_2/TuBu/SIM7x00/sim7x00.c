@@ -94,7 +94,7 @@ void SIM_Start(void){
 void SIM_Config(void)
 {
 	//	SIM_Start();
-	sendATcommand("AT+CSCLK=0", "OK", 1000);							// tắt Echo
+	sendATcommand("AT+CSCLK=0", "OK", 1000);					// tắt Echo
 	sendATcommand("ATE0", "OK", 1000);							// tắt Echo
 	sendATcommand("AT+CVALARM=1,3300,4300", "OK", 1000);
 	sendATcommand("AT+CPMVT=0,3300,4300", "OK", 1000);
