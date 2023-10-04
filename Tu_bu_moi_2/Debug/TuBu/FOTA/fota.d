@@ -1,5 +1,5 @@
 TuBu/FOTA/fota.o: ../TuBu/FOTA/fota.c ../TuBu/FOTA/fota.h \
- C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/FLASH/flash.h \
+ G:/TU-BU-IOT/Tu_bu_moi_2/TuBu/FLASH/flash.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -30,10 +30,9 @@ TuBu/FOTA/fota.o: ../TuBu/FOTA/fota.c ../TuBu/FOTA/fota.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_sd.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_sdmmc.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/SIM7x00/sim7x00.h \
- ../Core/Inc/main.h
+ G:/TU-BU-IOT/Tu_bu_moi_2/TuBu/SIM7x00/sim7x00.h ../Core/Inc/main.h
 ../TuBu/FOTA/fota.h:
-C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/FLASH/flash.h:
+G:/TU-BU-IOT/Tu_bu_moi_2/TuBu/FLASH/flash.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h:
@@ -64,5 +63,5 @@ C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/FLASH/flash.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_sd.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_sdmmc.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
-C:/Users/HP/STM32CubeIDE/Tu_Bu/Tu_bu_moi_2/TuBu/SIM7x00/sim7x00.h:
+G:/TU-BU-IOT/Tu_bu_moi_2/TuBu/SIM7x00/sim7x00.h:
 ../Core/Inc/main.h:

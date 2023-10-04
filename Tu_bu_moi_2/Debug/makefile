@@ -71,8 +71,8 @@ all: main-build
 main-build: Tu_bu_moi_2.elf secondary-outputs
 
 # Tool invocations
-Tu_bu_moi_2.elf Tu_bu_moi_2.map: $(OBJS) $(USER_OBJS) C:\Users\HP\STM32CubeIDE\Tu_Bu\Tu_bu_moi_2\STM32F407VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Tu_bu_moi_2.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\HP\STM32CubeIDE\Tu_Bu\Tu_bu_moi_2\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Tu_bu_moi_2.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Tu_bu_moi_2.elf Tu_bu_moi_2.map: $(OBJS) $(USER_OBJS) G:\TU-BU-IOT\Tu_bu_moi_2\STM32F407VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Tu_bu_moi_2.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"G:\TU-BU-IOT\Tu_bu_moi_2\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Tu_bu_moi_2.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
