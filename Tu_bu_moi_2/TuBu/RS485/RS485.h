@@ -8,23 +8,23 @@ extern UART_HandleTypeDef huart6;
 
 typedef enum
 {
-	Read_CoilStatus 				= 0x01,
-	Read_InputStatus 				= 0x02,
-	Read_HoldingRegister 		=	0x03,
-	Read_InputRegister 			= 0x04,
-	Force_SingleCoil 				=	0x05,
-	Preset_SingleRegister		= 0x06,
-	Read_ExceptionStatus 		= 0x07,
-	Fetch_CommEventCounter	= 0x0B,
-	Fetch_CommEventLog			= 0x0C,
-	Force_MultipleCoils			= 0x0F,
-	Preset_MultipleRegisters= 0x10,
-	Report_SlaveID					= 0x11,
-	Read_GeneralReference		= 0x14,
-	Write_GeneralReference	= 0x15,
-	MaskWrite_4XRegister		= 0x16,
-	ReadWrite_4XRegisters		= 0x17,
-	Read_FIFOQueue					= 0x24
+		Read_CoilStatus 				= 0x01,
+		Read_InputStatus 				= 0x02,
+		Read_HoldingRegister 		=	0x03,
+		Read_InputRegister 			= 0x04,
+		Force_SingleCoil 				=	0x05,
+		Preset_SingleRegister		= 0x06,
+		Read_ExceptionStatus 		= 0x07,
+		Fetch_CommEventCounter	= 0x0B,
+		Fetch_CommEventLog			= 0x0C,
+		Force_MultipleCoils			= 0x0F,
+		Preset_MultipleRegisters= 0x10,
+		Report_SlaveID					= 0x11,
+		Read_GeneralReference		= 0x14,
+		Write_GeneralReference	= 0x15,
+		MaskWrite_4XRegister		= 0x16,
+		ReadWrite_4XRegisters		= 0x17,
+		Read_FIFOQueue					= 0x24
 
 } RS485_Function;
 

@@ -60,7 +60,7 @@ typedef enum
 	SIM_UPPER_VOLTAGE,
 	SIM_SMS,
 	SIM_CALL,
-} SIM_Event;
+} SIM_Event;	
 
 typedef enum
 {

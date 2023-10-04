@@ -6,6 +6,9 @@
         "${workspaceFolder}/**"
       ],
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> trung
       "compilerPath": "C:/MinGW/bin/gcc.exe",
       "cStandard": "${default}",
       "cppStandard": "${default}",
@@ -13,6 +16,7 @@
       "compilerArgs": [
         ""
       ]
+<<<<<<< HEAD
 =======
       "defines": [
         "_DEBUG",
@@ -25,6 +29,8 @@
       "cppStandard": "${default}",
       "intelliSenseMode": "windows-gcc-x86"
 >>>>>>> 159c0e26fa6ef3d763f180ce8a8b9f70a835e638
+=======
+>>>>>>> trung
     }
   ],
   "version": 4
