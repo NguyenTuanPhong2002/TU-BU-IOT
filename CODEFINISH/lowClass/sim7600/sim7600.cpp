@@ -2,8 +2,7 @@
  * sim7600.cpp
  *
  *  Created on: Oct 3, 2023
- *      Author: NTPhong
- * 		Email: ntphong01112002@gmail.com
+  
  */
 
 /**
