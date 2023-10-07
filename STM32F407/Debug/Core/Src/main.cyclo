@@ -1,6 +1,0 @@
-main.c:68:5:main	1
-main.c:113:6:SystemClock_Config	3
-main.c:155:13:MX_USART1_UART_Init	2
-main.c:186:13:MX_DMA_Init	1
-main.c:204:13:MX_GPIO_Init	1
-main.c:224:6:Error_Handler	1

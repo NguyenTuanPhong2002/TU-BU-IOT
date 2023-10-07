@@ -37,6 +37,7 @@ private:
     uint8_t rxFlag;
 
 public:
+    Sim7600(UART_HandleTypeDef *huart, DMA_HandleTypeDef *hdma);
     SIM_StatusTypeDef initDMA();
     SIM_StatusTypeDef sendATcommand(const char *ATCommand, const char *Response, uint32_t Timeout);
     SIM_StatusTypeDef simStart();

@@ -2,7 +2,8 @@
  * sim7600.cpp
  *
  *  Created on: Oct 3, 2023
-  
+   *      Author: NTPhong
+ * 		Email: ntphong01112002@gmail.com
  */
 
 /**
@@ -17,6 +18,21 @@
 #include <cstring>
 #include <stdlib.h>
 
+
+/**
+ * The Sim7600 constructor initializes the Sim7600 object with the specified UART handle and DMA
+ * handle.
+ * 
+ * @param huart The huart parameter is a pointer to a UART_HandleTypeDef structure. This structure
+ * contains the configuration and state information for a UART (Universal Asynchronous
+ * Receiver/Transmitter) peripheral. It is typically used to configure and control the UART
+ * communication settings, such as baud rate, data format, and flow control.
+ * @param hdma The "hdma" parameter is a pointer to a DMA_HandleTypeDef structure. This structure is
+ * typically used to configure and control the Direct Memory Access (DMA) controller for data transfer
+ * operations. The DMA controller can be used to offload data transfer tasks from the CPU, improving
+ * overall system performance.
+ */
+Sim7600::Sim7600(UART_HandleTypeDef *huart, DMA_HandleTypeDef *hdma) : huart(huart), hdma(hdma){};
 /**
  * The code defines a class Sim7600 that provides functions for initializing and controlling a SIM7600
  * module for tasks such as sending SMS messages, making HTTP requests, and retrieving signal strength.
