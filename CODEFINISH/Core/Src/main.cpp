@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "sim7600.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,7 +43,7 @@
 UART_HandleTypeDef huart4;
 
 /* USER CODE BEGIN PV */
-Sim7600 sim;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
