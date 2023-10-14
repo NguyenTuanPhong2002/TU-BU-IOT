@@ -166,7 +166,7 @@ void CONTACTOR_READ()
 RS485Query_t m_RS485Query5 =
     {
         .slaveAddress = 0x01,
-        .mbFunction = Read_HoldingRegister,
+        .mbFunction = Read_HoldingRegister, 
         .regAddress = 0x43,
         .regCount = 0x02};
 RS485Query_t m_RS485Query2 =
@@ -672,7 +672,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : DTR_Pin PA9 PA10 */
   GPIO_InitStruct.Pin = DTR_Pin | GPIO_PIN_9 | GPIO_PIN_10;
@@ -845,7 +845,7 @@ void SendDataToServer()
           "application/json", jsonBuffer, &httpInfo);
       HAL_Delay(120000);
       SplitTime(&GetMinSec);
-      Set_Time(5, Timeptr->Minute, Timeptr->Second);
+      Set_Time(5,Timeptr->Minute, Timeptr->Second);
       Set_Alarm(Timeptr->Minute);
     }
   }

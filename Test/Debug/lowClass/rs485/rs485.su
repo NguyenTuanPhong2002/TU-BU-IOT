@@ -1,0 +1,6 @@
+../lowClass/rs485/rs485.c:14:13:RS485_enablePowerOn	16	static
+../lowClass/rs485/rs485.c:23:13:RS485_enablePowerOff	16	static
+../lowClass/rs485/rs485.c:34:6:RS485_enableTransmitMode	16	static
+../lowClass/rs485/rs485.c:46:13:RS485_enableReceiveMode	16	static
+../lowClass/rs485/rs485.c:56:6:RS485_Transmit	24	static
+../lowClass/rs485/rs485.c:69:6:RS485_Receive	24	static

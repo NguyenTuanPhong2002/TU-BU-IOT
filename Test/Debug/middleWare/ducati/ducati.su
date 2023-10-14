@@ -1,0 +1,3 @@
+../middleWare/ducati/ducati.c:12:10:crcCalculation	32	static
+../middleWare/ducati/ducati.c:36:6:Ducati_transmit	40	static
+../middleWare/ducati/ducati.c:53:6:Ducati_Master_Receive	320	static
