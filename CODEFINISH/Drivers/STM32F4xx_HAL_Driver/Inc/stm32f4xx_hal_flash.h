@@ -33,7 +33,6 @@
 /** @addtogroup FLASH
   * @{
   */ 
-#define FLASH_TIMEOUT_VALUE      (50000U) /* 50 s */
 
 /* Exported types ------------------------------------------------------------*/
 /** @defgroup FLASH_Exported_Types FLASH Exported Types

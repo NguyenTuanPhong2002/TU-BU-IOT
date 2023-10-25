@@ -3,15 +3,14 @@
  *
  *  Created on: Oct 4, 2023
  *      Author: NTPhong
- * 		Email: ntphong01112002@gmail.com
+ * 		Email: ntphong011102@gmail.com
  */
 
-#ifndef SIM_SIM_H_
-#define SIM_SIM_H_
+#ifndef SIMCORE_SIMCORE_H_
+#define SIMCORE_SIMCORE_H_
 
 #include "sim7600.h"
 
-#include "main.h"
 #include "stm32f4xx_hal_uart.h"
 
 #define SIM_URC_SMS "+CMTI: \"SM\","
@@ -27,11 +26,14 @@ class Sim : public Sim7600
 private:
     /* data */
     char buffer[500];
+
 public:
-    SIM_StatusTypeDef Sim_init(UART_HandleTypeDef *huart, DMA_HandleTypeDef *hdma);
+    SIM_StatusTypeDef Sim_init();
     SIM_StatusTypeDef HTTP_downloadFile(const char *pURL, const char *pFilename);
     uint32_t SIM_getFileSize(const char *pFilename);
-    uint32_t* SIM_getBuffer();
+    uint32_t *SIM_getBuffer();
 };
 
-#endif /* SIM_SIM_H_ */
+
+
+#endif /* SIMCORE_SIMCORE_H_ */

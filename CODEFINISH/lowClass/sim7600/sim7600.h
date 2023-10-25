@@ -3,7 +3,7 @@
  *
  *  Created on: Oct 3, 2023
  *      Author: NTPhong
- * 		Email: ntphong01112002@gmail.com
+ * 		Email: ntphong011102@gmail.com
  */
 
 #ifndef SIM7600_H_
@@ -27,7 +27,6 @@ class Sim7600
 private:
     GPIO_TypeDef *RST_PORT;
     uint8_t RST_PIN;
-
     GPIO_TypeDef *PWR_PORT;
     uint8_t PWR_PIN;
     UART_HandleTypeDef *huart;
@@ -37,7 +36,9 @@ private:
     uint8_t rxFlag;
 
 public:
-    Sim7600(UART_HandleTypeDef *huart, DMA_HandleTypeDef *hdma);
+    SIM_StatusTypeDef SIM7600_setPinPWR(GPIO_TypeDef *PORT, uint8_t pin);
+    SIM_StatusTypeDef SIM7600_setPinRST(GPIO_TypeDef *PORT, uint8_t pin);
+    SIM_StatusTypeDef Sim7600_init(UART_HandleTypeDef *setUart, DMA_HandleTypeDef *setHdma);
     SIM_StatusTypeDef initDMA();
     SIM_StatusTypeDef sendATcommand(const char *ATCommand, const char *Response, uint32_t Timeout);
     SIM_StatusTypeDef simStart();

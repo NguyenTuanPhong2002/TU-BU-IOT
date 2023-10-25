@@ -3,13 +3,13 @@
  *
  *  Created on: Oct 5, 2023
  *      Author: NTPhong
- * 		Email: ntphong01112002@gmail.com
+ * 		Email: ntphong011102@gmail.com
  */
 
 #ifndef FOTA_FOTA_H_
 #define FOTA_FOTA_H_
 
-#include "sim.h"
+#include "simcore.h"
 
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_def.h"
@@ -43,7 +43,7 @@
 
 #define FOTA_SR_STT_Pos (0U)
 
-#define FOTA_FLAG_UPEN (0x1UL << FOTA_SR_STT_Pos)  /* Flag update firmware enable */ 
+#define FOTA_FLAG_UPEN (0x1UL << FOTA_SR_STT_Pos)  /* Flag update firmware enable */
 #define FOTA_FLAG_UPOK (0x2UL << FOTA_SR_STT_Pos)  /* Flag update firmware status */
 #define FOTA_FLAG_GUER (0x3UL << FOTA_SR_STT_Pos)  /* Flag update ??? */
 #define FOTA_FLAG_VERER (0x4UL << FOTA_SR_STT_Pos) /* Flag old version or version error */

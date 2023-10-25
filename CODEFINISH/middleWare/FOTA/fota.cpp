@@ -3,7 +3,7 @@
  *
  *  Created on: Oct 5, 2023
  *      Author: NTPhong
- * 		Email: ntphong01112002@gmail.com
+ * 		Email: ntphong011102@gmail.com
  */
 
 #include "fota.h"
@@ -23,6 +23,14 @@ extern FLASH_ProcessTypeDef pFlash;
  * @brief
  *
  * @return __RAM_FUNC
+ */
+/**
+ * The function `FLASHRAM_SetErrorCode` checks for various flash error flags and sets the corresponding
+ * error codes in the `pFlash` structure.
+ *
+ * @return a value of type HAL_StatusTypeDef, which is a status enumeration indicating the success or
+ * failure of the operation. In this case, it is returning HAL_OK, indicating that the operation was
+ * successful.
  */
 static __RAM_FUNC HAL_StatusTypeDef FLASHRAM_SetErrorCode(void)
 {
@@ -70,6 +78,16 @@ static __RAM_FUNC HAL_StatusTypeDef FLASHRAM_SetErrorCode(void)
  *
  * @param Timeout
  * @return __RAM_FUNC
+ */
+/**
+ * The function waits for a FLASH operation to complete by polling on the BUSY flag and returns the
+ * status of the operation.
+ *
+ * @param Timeout The Timeout parameter is the maximum amount of time (in milliseconds) to wait for the
+ * FLASH operation to complete. If the operation takes longer than the specified timeout, the function
+ * will return HAL_TIMEOUT.
+ *
+ * @return a value of type HAL_StatusTypeDef.
  */
 static __RAM_FUNC HAL_StatusTypeDef FLASHRAM_WaitForLastOperation(uint32_t Timeout)
 {
@@ -120,6 +138,16 @@ static __RAM_FUNC HAL_StatusTypeDef FLASHRAM_WaitForLastOperation(uint32_t Timeo
  * @param pBuffer
  * @return __RAM_FUNC
  */
+/**
+ * The function `HAL_FLASHEx_DoublePageProgram` is used to program a double page in flash memory with
+ * 32 different words.
+ *
+ * @param Address The starting address in flash memory where the data will be written.
+ * @param pBuffer A pointer to the buffer containing the data to be programmed into flash memory.
+ *
+ * @return a value of type HAL_StatusTypeDef, which is a status enumeration indicating the result of
+ * the double page program operation.
+ */
 __RAM_FUNC HAL_StatusTypeDef HAL_FLASHEx_DoublePageProgram(uint32_t Address,
 														   uint32_t *pBuffer)
 {
@@ -128,7 +156,7 @@ __RAM_FUNC HAL_StatusTypeDef HAL_FLASHEx_DoublePageProgram(uint32_t Address,
 	HAL_StatusTypeDef status = HAL_OK;
 
 	/* Wait for last operation to be completed */
-	status = FLASHRAM_WaitForLastOperation(FLASH_TIMEOUT_VALUE);
+	//status = FLASHRAM_WaitForLastOperation(FLASH_TIMEOUT_VALUE);
 
 	if (status == HAL_OK)
 	{
@@ -150,7 +178,7 @@ __RAM_FUNC HAL_StatusTypeDef HAL_FLASHEx_DoublePageProgram(uint32_t Address,
 		}
 
 		/* Wait for last operation to be completed */
-		status = FLASHRAM_WaitForLastOperation(FLASH_TIMEOUT_VALUE);
+		//status = FLASHRAM_WaitForLastOperation(FLASH_TIMEOUT_VALUE);
 
 		/* If the write operation is completed, disable the PROG and FPRG bits */
 //		CLEAR_BIT(FLASH->PECR, FLASH_PECR_PROG);
@@ -166,21 +194,55 @@ __RAM_FUNC HAL_StatusTypeDef HAL_FLASHEx_DoublePageProgram(uint32_t Address,
 
 //----------------------------------------------------------
 
+/**
+ * The function FOTA_SET_FLAG sets a flag by performing a bitwise OR operation with the input setFlag.
+ *
+ * @param setFlag The setFlag parameter is a uint8_t (unsigned 8-bit integer) that represents the flag
+ * value to be set.
+ *
+ * @return the result of the bitwise OR operation between the current value of the `Flag` variable and
+ * the `setFlag` parameter.
+ */
 uint8_t FOTA::FOTA_SET_FLAG(uint8_t setFlag)
 {
     return this->Flag |= setFlag;
 }
 
+/**
+ * The function FOTA_GET_FLAG checks if a specific flag is set in the Flag variable.
+ *
+ * @param setFlag The parameter `setFlag` is a uint8_t variable that represents a flag value.
+ *
+ * @return a boolean value.
+ */
 uint8_t FOTA::FOTA_GET_FLAG(uint8_t setFlag)
 {
     return (this->Flag & setFlag) == setFlag;
 }
 
+/**
+ * The function FOTA_CLR_FLAG clears a specific flag in the Flag variable.
+ *
+ * @param setFlag The parameter "setFlag" is a uint8_t variable that represents the flag that needs to
+ * be cleared.
+ *
+ * @return the result of the bitwise AND operation between the current value of the `Flag` variable and
+ * the complement of the `setFlag` variable.
+ */
 uint8_t FOTA::FOTA_CLR_FLAG(uint8_t setFlag)
 {
     return this->Flag &= ~setFlag;
 }
 
+/**
+ * The FOTA_setDownloadURL function sets the download URL for firmware updates, ensuring that the URL
+ * size is within the limits.
+ *
+ * @param pURL A pointer to the download URL string.
+ * @param URLSize URLSize is the size of the URL string passed as the pURL parameter.
+ *
+ * @return a value of type FOTA_StatusTypeDef.
+ */
 FOTA_StatusTypeDef FOTA::FOTA_setDownloadURL(const char *pURL, uint16_t URLSize)
 {
     if (URLSize < sizeof(this->firmwareURL))
@@ -196,6 +258,17 @@ FOTA_StatusTypeDef FOTA::FOTA_setDownloadURL(const char *pURL, uint16_t URLSize)
     }
 }
 
+/**
+ * The function FOTA_getCurrentVersion retrieves the current version of the firmware from EEPROM and
+ * stores it in an array.
+ *
+ * @param pVersion pVersion is a pointer to an array of uint16_t values. This array will be used to
+ * store the current version information.
+ * @param size The parameter "size" is the size of the array "pVersion". It indicates the number of
+ * elements that can be stored in the array. In this case, it is expected to be 3.
+ *
+ * @return a value of type FOTA_StatusTypeDef.
+ */
 FOTA_StatusTypeDef FOTA::FOTA_getCurrentVersion(uint16_t pVersion[], size_t size)
 {
     if (size != 3)
@@ -209,6 +282,12 @@ FOTA_StatusTypeDef FOTA::FOTA_getCurrentVersion(uint16_t pVersion[], size_t size
     return FOTA_OK;
 }
 
+/**
+ * The function compares two versions and returns a status indicating if the new version is compatible
+ * or not.
+ *
+ * @return a value of type FOTA_StatusTypeDef.
+ */
 FOTA_StatusTypeDef FOTA::FOTA_compareVersion()
 {
 
@@ -248,6 +327,12 @@ FOTA_StatusTypeDef FOTA::FOTA_compareVersion()
     }
 }
 
+/**
+ * The function `FOTA_parseFirmwareInfo` parses the firmware filename to extract the firmware name and
+ * version.
+ *
+ * @return a value of type FOTA_StatusTypeDef.
+ */
 FOTA_StatusTypeDef FOTA::FOTA_parseFirmwareInfo()
 {
     /* Parse firmware filename */
@@ -303,6 +388,12 @@ FOTA_StatusTypeDef FOTA::FOTA_parseFirmwareInfo()
     return FOTA_OK;
 }
 
+/**
+ * The FOTA_downloadFirmware function downloads a firmware file using an HTTP request and returns a
+ * status indicating success or failure.
+ *
+ * @return a value of type FOTA_StatusTypeDef.
+ */
 FOTA_StatusTypeDef FOTA::FOTA_downloadFirmware()
 {
     if (httpDownloadFile(this->firmwareURL, this->firmwareName) != SIM_OK)
@@ -315,6 +406,12 @@ FOTA_StatusTypeDef FOTA::FOTA_downloadFirmware()
     }
 }
 
+/**
+ * The function `FOTA_writeFirmware` writes firmware to a specific address in flash memory and verifies
+ * the download by calculating the CRC32 checksum.
+ *
+ * @return a value of type FOTA_StatusTypeDef.
+ */
 FOTA_StatusTypeDef FOTA::FOTA_writeFirmware()
 {
 
@@ -427,6 +524,13 @@ FOTA_StatusTypeDef FOTA::FOTA_writeFirmware()
     }
 }
 
+/**
+ * The function FOTA_getCurrentAddress returns the value stored at the address specified by
+ * FOTA_EEPROM_CURRENT_ADDR.
+ *
+ * @return the value stored at the memory address specified by the macro FOTA_EEPROM_CURRENT_ADDR,
+ * casted as a volatile uint32_t pointer.
+ */
 uint32_t FOTA_getCurrentAddress(void)
 {
     return *(volatile uint32_t *)FOTA_EEPROM_CURRENT_ADDR;

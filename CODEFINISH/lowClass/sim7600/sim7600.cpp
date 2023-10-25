@@ -2,14 +2,14 @@
  * sim7600.cpp
  *
  *  Created on: Oct 3, 2023
-   *      Author: NTPhong
- * 		Email: ntphong01112002@gmail.com
+ *      Author: NTPhong
+ * 		Email: ntphong011102@gmail.com
  */
 
 /**
  * The code defines a class Sim7600 that provides functions for initializing and controlling a SIM7600
  * module for tasks such as sending SMS messages, making HTTP requests, and retrieving signal strength.
- * 
+ *
  * @return The functions in the code are returning values of type SIM_StatusTypeDef.
  */
 #include "sim7600.h"
@@ -18,11 +18,46 @@
 #include <cstring>
 #include <stdlib.h>
 
+/**
+ * The function "SIM7600_setPinPWR" sets the power pin for the SIM7600 module.
+ * 
+ * @param PORT PORT is a pointer to a GPIO_TypeDef structure, which represents the GPIO port that is
+ * used for controlling the power pin of the SIM7600 module.
+ * @param pin The pin parameter is an 8-bit unsigned integer that represents the pin number of the GPIO
+ * port.
+ * 
+ * @return a value of type SIM_StatusTypeDef, which is defined in the Sim7600 class. The specific value
+ * being returned is SIM_OK.
+ */
+SIM_StatusTypeDef Sim7600::SIM7600_setPinPWR(GPIO_TypeDef *PORT, uint8_t pin)
+{
+	this->PWR_PORT = PORT;
+	this->PWR_PIN = pin;
+	return SIM_OK;
+}
+/**
+ * The function sets the RST_PIN and RST_PORT variables of the Sim7600 class and returns SIM_OK.
+ * 
+ * @param PORT PORT is a pointer to a GPIO_TypeDef structure. This structure represents the GPIO port
+ * to which the RST_PIN is connected. It contains information about the port's registers and
+ * configuration settings.
+ * @param pin The pin parameter is the pin number of the GPIO port that will be used for the SIM7600
+ * module's reset pin.
+ * 
+ * @return a value of type SIM_StatusTypeDef, which is defined in the Sim7600 class. The specific value
+ * being returned is SIM_OK.
+ */
+SIM_StatusTypeDef Sim7600::SIM7600_setPinRST(GPIO_TypeDef *PORT, uint8_t pin)
+{
+	this->RST_PORT = PORT;
+	this->RST_PIN = pin;
+	return SIM_OK;
+}
 
 /**
  * The Sim7600 constructor initializes the Sim7600 object with the specified UART handle and DMA
  * handle.
- * 
+ *
  * @param huart The huart parameter is a pointer to a UART_HandleTypeDef structure. This structure
  * contains the configuration and state information for a UART (Universal Asynchronous
  * Receiver/Transmitter) peripheral. It is typically used to configure and control the UART
@@ -32,11 +67,16 @@
  * operations. The DMA controller can be used to offload data transfer tasks from the CPU, improving
  * overall system performance.
  */
-Sim7600::Sim7600(UART_HandleTypeDef *huart, DMA_HandleTypeDef *hdma) : huart(huart), hdma(hdma){};
+SIM_StatusTypeDef Sim7600::Sim7600_init(UART_HandleTypeDef *setUart, DMA_HandleTypeDef *setHdma)
+{
+	this->hdma = setHdma;
+	this->huart = setUart;
+	return SIM_OK;
+}
 /**
  * The code defines a class Sim7600 that provides functions for initializing and controlling a SIM7600
  * module for tasks such as sending SMS messages, making HTTP requests, and retrieving signal strength.
- * 
+ *
  * @return The functions in the code are returning values of type SIM_StatusTypeDef.
  */
 /**
@@ -256,23 +296,22 @@ SIM_StatusTypeDef Sim7600::sendSMS(const char *phoneNumber, const char *message)
 /**
  * The function "realTime" sends an AT command to the Sim7600 module to retrieve the current real-time
  * clock value.
- * 
+ *
  * @return a pointer to a character array (string).
  */
 char *Sim7600::realTime()
 {
 	sendATcommand("AT+CCLK=?", "OK", 1000);
-	return (char*)this->rxBuffer;
+	return (char *)this->rxBuffer;
 }
-
 
 /**
  * The function "readSMS" in the Sim7600 class reads an SMS message at a specified index and returns
  * the message as a character array.
- * 
+ *
  * @param index The index parameter is an unsigned 8-bit integer that represents the index of the SMS
  * message to be read.
- * 
+ *
  * @return a pointer to a character array (char *) which represents the received SMS message.
  */
 char *Sim7600::readSMS(uint8_t index)
@@ -280,12 +319,12 @@ char *Sim7600::readSMS(uint8_t index)
 	uint8_t send[12] = {0};
 	sprintf((char *)send, "AT+CMGR=%d", index);
 	sendATcommand((char *)send, "OK", 9000);
-	return (char*)this->rxBuffer;
+	return (char *)this->rxBuffer;
 }
 
 /**
  * The function "httpStart" initializes the HTTP connection with the SIM7600 module.
- * 
+ *
  * @return a SIM_StatusTypeDef, which is a user-defined data type.
  */
 SIM_StatusTypeDef Sim7600::httpStart()
@@ -295,10 +334,10 @@ SIM_StatusTypeDef Sim7600::httpStart()
 
 /**
  * The function sets the URL for an HTTP request in the SIM7600 module.
- * 
+ *
  * @param url The `url` parameter is a pointer to a character array that represents the URL to be set
  * for the HTTP request.
- * 
+ *
  * @return a value of type SIM_StatusTypeDef.
  */
 SIM_StatusTypeDef Sim7600::httpSetUrl(const char *url)
@@ -310,7 +349,7 @@ SIM_StatusTypeDef Sim7600::httpSetUrl(const char *url)
 
 /**
  * The function `httpStop()` stops the HTTP connection.
- * 
+ *
  * @return a SIM_StatusTypeDef, which is a user-defined data type.
  */
 SIM_StatusTypeDef Sim7600::httpStop()
@@ -321,7 +360,7 @@ SIM_StatusTypeDef Sim7600::httpStop()
 /**
  * The function `httpReadResponse` sends an AT command to read the HTTP response from the SIM7600
  * module.
- * 
+ *
  * @return a value of type SIM_StatusTypeDef.
  */
 SIM_StatusTypeDef Sim7600::httpReadResponse()
@@ -337,16 +376,16 @@ SIM_StatusTypeDef Sim7600::httpReadResponse()
 
 /**
  * The function `httpPost` sends an HTTP POST request with the specified data and timeout.
- * 
+ *
  * @param data The "data" parameter is a pointer to a character array that contains the data to be sent
  * in the HTTP POST request. It is assumed to be in JSON format.
  * @param timeout The timeout parameter is the maximum time in milliseconds that the function will wait
  * for a response from the SIM7600 module before timing out.
- * 
+ *
  * @return a SIM_StatusTypeDef, which is a user-defined data type. The specific value being returned
  * depends on the outcome of the function.
  */
-SIM_StatusTypeDef Sim7600::	httpPost(const char *data, int timeout)
+SIM_StatusTypeDef Sim7600::httpPost(const char *data, int timeout)
 {
 	sendATcommand("AT+HTTPPARA=\"CONTENT\",\"application/json\"", "OK", 12000);
 	uint8_t cmd[30] = {0};
@@ -366,11 +405,11 @@ SIM_StatusTypeDef Sim7600::	httpPost(const char *data, int timeout)
 /**
  * The function `httpDownloadFile` is used to download a file from a specified URL and save it with a
  * specified filename.
- * 
+ *
  * @param url The URL of the file you want to download.
  * @param filename The filename parameter is a character array that represents the name of the file to
  * be downloaded.
- * 
+ *
  * @return a value of type SIM_StatusTypeDef.
  */
 SIM_StatusTypeDef Sim7600::httpDownloadFile(char *url, char *filename)
