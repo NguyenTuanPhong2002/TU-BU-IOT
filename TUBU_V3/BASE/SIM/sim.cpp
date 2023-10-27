@@ -37,18 +37,18 @@ APP_StatusTypeDef SIM::getSimData(uint32_t data, SIM_DataTypeDef *pData)
     {
         SIM_getSimPhone(pData->simPhone, sizeof(pData->simPhone));
     }
-    if ((data & SIM_DR_IMEI) == SIM_DR_IMEI)
-    {
-        (*me->simGetIMEI)(me, pData->imei, sizeof(pData->imei));
-    }
-    if ((data & SIM_DR_TIME) == SIM_DR_TIME)
-    {
-        (*me->simGetLocalTime)(me, pData->timezone, sizeof(pData->timezone));
-    }
-    if ((data & SIM_DR_TEMP) == SIM_DR_TEMP)
-    {
-        pData->temp = (*me->simGetTemperature)(me);
-    }
+    // if ((data & SIM_DR_IMEI) == SIM_DR_IMEI)
+    // {
+    //     (*me->simGetIMEI)(me, pData->imei, sizeof(pData->imei));
+    // }
+    // if ((data & SIM_DR_TIME) == SIM_DR_TIME)
+    // {
+    //     (*me->simGetLocalTime)(me, pData->timezone, sizeof(pData->timezone));
+    // }
+    // if ((data & SIM_DR_TEMP) == SIM_DR_TEMP)
+    // {
+    //     pData->temp = (*me->simGetTemperature)(me);
+    // }
     return APP_OK;
 }
 
