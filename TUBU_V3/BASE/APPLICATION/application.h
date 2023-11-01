@@ -10,6 +10,7 @@
 #define APPLICATION_APPLICATION_H_
 
 #include "main.h"
+#include "stm32f4xx_hal_def.h"
 #include "stm32f4xx_hal_uart.h"
 
 #if 1

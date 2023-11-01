@@ -115,6 +115,7 @@ int8_t SIM7600::SIM_getRSSI()
 
 uint8_t SIM7600::SIM_getNwtype(char pNwtype[], uint8_t size)
 {
+	return 0;
 }
 
 APP_StatusTypeDef SIM7600::SIM_getSimPhone(char pPhone[], uint8_t size)

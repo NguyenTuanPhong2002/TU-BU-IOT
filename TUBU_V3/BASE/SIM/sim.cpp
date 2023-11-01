@@ -10,12 +10,12 @@
 
 void *SIM::simSleep()
 {
-    return;
+    //return;
 }
 
 void *SIM::simWakeup()
 {
-    return;
+    //return;
 }
 
 APP_StatusTypeDef SIM::SIM_sendATCommand(const char *command, const char *expect, const char *unexpect, uint32_t timeout)
