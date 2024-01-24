@@ -10,6 +10,13 @@
 
 extern CRC_HandleTypeDef hcrc;
 
+/**
+ * The DUCATI_R8 constructor initializes the member variables of the DUCATI_R8 class using the values
+ * from the provided DUCATI_R8ptr object.
+ * 
+ * @param ducati The parameter "ducati" is a pointer to a structure of type "DUCATI_R8ptr". This
+ * structure contains the following members:
+ */
 DUCATI_R8::DUCATI_R8(DUCATI_R8ptr *ducati)
 {
     this->ducatiR8->DE_PIN = ducati->DE_PIN;
@@ -53,6 +60,12 @@ void DUCATI_R8::Disable()
     HAL_GPIO_WritePin(this->ducatiR8->DE_PORT, this->ducatiR8->DE_PIN, GPIO_PIN_SET);
 }
 
+/**
+ * The DUCATI_R8 class's DUCATI_transmit function transmits a RS485 query using UART communication.
+ * 
+ * @param p_RS485Query The parameter p_RS485Query is of type RS485Query_t, which is a structure
+ * containing the following fields:
+ */
 void DUCATI_R8::DUCATI_transmit(RS485Query_t p_RS485Query)
 {
     uint8_t queryData[8];
@@ -75,6 +88,19 @@ void DUCATI_R8::DUCATI_transmit(RS485Query_t p_RS485Query)
     Disable();
 }
 
+/**
+ * The function DUCATI_forceSingleCoil sends a query to a slave device to force a single coil to a
+ * specified state.
+ * 
+ * @param SlaveAddr The SlaveAddr parameter is the address of the slave device that you want to
+ * communicate with.
+ * @param Coil The "Coil" parameter is a 16-bit unsigned integer that represents the coil address. It
+ * is split into two bytes, with the most significant byte stored in queryData[2] and the least
+ * significant byte stored in queryData[3].
+ * @param State The "State" parameter is used to determine the desired state of the coil. If "State" is
+ * equal to 1, it means the coil should be set to ON or energized. If "State" is equal to 0, it means
+ * the coil should be set to OFF or de
+ */
 void DUCATI_R8::DUCATI_forceSingleCoil(uint8_t SlaveAddr, uint16_t Coil, uint8_t State)
 {
     uint8_t queryData[10];
@@ -92,6 +118,18 @@ void DUCATI_R8::DUCATI_forceSingleCoil(uint8_t SlaveAddr, uint16_t Coil, uint8_t
     EnableReceiver();
 }
 
+/**
+ * The function `DUCATI_analysis` analyzes the data received over RS485 communication and extracts
+ * relevant information based on the specified RS485 query.
+ * 
+ * @param RS485_SentStruct RS485Query_t structure that contains information about the RS485 query being
+ * sent, such as the slave address and the Modbus function.
+ * @param p_RS485Data p_RS485Data is a pointer to an array of uint8_t data, which represents the data
+ * received over the RS485 communication interface.
+ * @param length The "length" parameter is the length of the RS485 data received in bytes.
+ * 
+ * @return a variable of type RS485Data_t.
+ */
 RS485Data_t DUCATI_R8::DUCATI_analysis(RS485Query_t RS485_SentStruct, uint8_t *p_RS485Data, uint8_t length)
 {
     RS485Data_t rs485;
@@ -173,6 +211,16 @@ RS485Data_t DUCATI_R8::DUCATI_analysis(RS485Query_t RS485_SentStruct, uint8_t *p
     return rs485;
 }
 
+/**
+ * The function `DUCATI_R8::DUCATI_Master_Receive` receives data from a UART communication and
+ * processes it to extract specific information.
+ * 
+ * @param Master_ReceivedBuff Master_ReceivedBuff is a character array that will store the received
+ * data from the UART communication.
+ * @param length The parameter "length" represents the length of the buffer or array
+ * "Master_ReceivedBuff". It indicates the number of elements or bytes that can be stored in the
+ * buffer.
+ */
 void DUCATI_R8::DUCATI_Master_Receive(char Master_ReceivedBuff[], int length)
 {
     HAL_UART_Receive(this->ducatiR8->huart, (uint8_t *)this->buffer, length, 1000);
@@ -198,19 +246,21 @@ void DUCATI_R8::DUCATI_Master_Receive(char Master_ReceivedBuff[], int length)
     }
 }
 
+/* The above code is a function in the DUCATI_R8 class that retrieves the value of the power factor
+(CosFi) from a device using UART communication. */
 float DUCATI_R8::DUCATI_getCosF()
 {
-    char buffer[9];
+    this->DUCATI_CosF[9] = {0};
     char RTU_CosFi[] = {0x01, 0x03, 0x01, 0x61, 0x00, 0x02, 0x94, 0x29};
     HAL_UART_Transmit(this->ducatiR8->huart, (uint8_t *)RTU_CosFi, 8, 1000);
-    DUCATI_Master_Receive(buffer, 9);
-    float CosFi = (float)(((uint16_t)buffer[5] << 8) | ((uint16_t)buffer[6])) / 100;
+    DUCATI_Master_Receive(this->DUCATI_CosF, 9);
+    float CosFi = (float)(((uint16_t)this->DUCATI_CosF[5] << 8) | ((uint16_t)this->DUCATI_CosF[6])) / 100;
     return CosFi;
 }
 
 float DUCATI_R8::DUCATI_getVoltage()
 {
-    char buffer[9];
+    this->DUCATI_V[9] = {0};
     this->msg_Query.slaveAddress = 0x01;
     this->msg_Query.mbFunction = Read_HoldingRegister;
     this->msg_Query.regAddress = 0x03;
@@ -222,14 +272,14 @@ float DUCATI_R8::DUCATI_getVoltage()
     //         .regAddress = 0x03,
     //         .regCount = 0x02};
     DUCATI_transmit(this->msg_Query);
-    DUCATI_Master_Receive(buffer, 9);
-    float Voltage = (float)(((uint16_t)buffer[5] << 8) | ((uint16_t)buffer[6]));
+    DUCATI_Master_Receive(this->DUCATI_V, 9);
+    float Voltage = (float)(((uint16_t)this->DUCATI_V[5] << 8) | ((uint16_t)this->DUCATI_V[6]));
     return Voltage;
 }
 
 float DUCATI_R8::DUCATI_getCurrent()
 {
-    char buffer[9];
+    this->DUCATI_I[9] = {0};
     this->msg_Query.slaveAddress = 0x01;
     this->msg_Query.mbFunction = Read_HoldingRegister;
     this->msg_Query.regAddress = 0x11;
@@ -241,14 +291,14 @@ float DUCATI_R8::DUCATI_getCurrent()
     //         .regAddress = 0x11,
     //         .regCount = 0x02};
     DUCATI_transmit(this->msg_Query);
-    DUCATI_Master_Receive(buffer, 9);
-    float current = (float)(((uint16_t)buffer[5] << 8) | ((uint16_t)buffer[6])) / 100;
+    DUCATI_Master_Receive(this->DUCATI_I, 9);
+    float current = (float)(((uint16_t)this->DUCATI_I[5] << 8) | ((uint16_t)this->DUCATI_I[6])) / 100;
     return current;
 }
 
 float DUCATI_R8::DUCATI_getFrequency()
 {
-    char buffer[9];
+    this->DUCATI_F[9] = {0};
     this->msg_Query.slaveAddress = 0x01;
     this->msg_Query.mbFunction = Read_HoldingRegister;
     this->msg_Query.regAddress = 0x01;
@@ -260,14 +310,14 @@ float DUCATI_R8::DUCATI_getFrequency()
     //         .regAddress = 0x01,
     //         .regCount = 0x02};
     DUCATI_transmit(this->msg_Query);
-    DUCATI_Master_Receive(buffer, 9);
-    float Frequency = (float)(((uint16_t)buffer[5] << 8) | ((uint16_t)buffer[6])) / 10;
+    DUCATI_Master_Receive(this->DUCATI_F, 9);
+    float Frequency = (float)(((uint16_t)this->DUCATI_F[5] << 8) | ((uint16_t)this->DUCATI_F[6])) / 10;
     return Frequency;
 }
 
 uint16_t DUCATI_R8::DUCATI_getAvQ()
 {
-    char buffer[9];
+    this->DUCATI_avQ[9] = {0};
     this->msg_Query.slaveAddress = 0x01;
     this->msg_Query.mbFunction = Read_HoldingRegister;
     this->msg_Query.regAddress = 0x53;
@@ -279,14 +329,14 @@ uint16_t DUCATI_R8::DUCATI_getAvQ()
     //     .regAddress = 0x53,
     //     .regCount = 0x02};
     DUCATI_transmit(this->msg_Query);
-    DUCATI_Master_Receive(buffer, 9);
-    uint16_t AvQ = ((uint16_t)buffer[5] << 8) | ((uint16_t)buffer[6]);
+    DUCATI_Master_Receive(this->DUCATI_avQ, 9);
+    uint16_t AvQ = ((uint16_t)this->DUCATI_avQ[5] << 8) | ((uint16_t)this->DUCATI_avQ[6]);
     return AvQ;
 }
 
 uint16_t DUCATI_R8::DUCATI_getActivePower()
 {
-    char buffer[9];
+    this->DUCATI_PE[9] = {0};
     this->msg_Query.slaveAddress = 0x01;
     this->msg_Query.mbFunction = Read_HoldingRegister;
     this->msg_Query.regAddress = 0x21;
@@ -298,14 +348,14 @@ uint16_t DUCATI_R8::DUCATI_getActivePower()
     //     .regAddress = 0x21,
     //     .regCount = 0x02};
     DUCATI_transmit(this->msg_Query);
-    DUCATI_Master_Receive(buffer, 9);
-    uint16_t ActivePower = (((uint16_t)buffer[5] << 8) | ((uint16_t)buffer[6])) / 1000;
+    DUCATI_Master_Receive(this->DUCATI_PE, 9);
+    uint16_t ActivePower = (((uint16_t)this->DUCATI_PE[5] << 8) | ((uint16_t)this->DUCATI_PE[6])) / 1000;
     return ActivePower;
 }
 
 uint16_t DUCATI_R8::DUCATI_getReactivePower()
 {
-    char buffer[9];
+    this->DUCATI_QE[9] = {0};
     this->msg_Query.slaveAddress = 0x01;
     this->msg_Query.mbFunction = Read_HoldingRegister;
     this->msg_Query.regAddress = 0x51;
@@ -317,14 +367,14 @@ uint16_t DUCATI_R8::DUCATI_getReactivePower()
     //     .regAddress = 0x51,
     //     .regCount = 0x02};
     DUCATI_transmit(this->msg_Query);
-    DUCATI_Master_Receive(buffer, 9);
-    uint16_t ReactivePower = (((uint16_t)buffer[5] << 8) | ((uint16_t)buffer[6])) / 1000;
+    DUCATI_Master_Receive(this->DUCATI_QE, 9);
+    uint16_t ReactivePower = (((uint16_t)this->DUCATI_QE[5] << 8) | ((uint16_t)this->DUCATI_QE[6])) / 1000;
     return ReactivePower;
 }
 
 uint16_t DUCATI_R8::DUCATI_getAvP()
 {
-    char buffer[9];
+    this->DUCATI_avP[9] = {0};
     this->msg_Query.slaveAddress = 0x01;
     this->msg_Query.mbFunction = Read_HoldingRegister;
     this->msg_Query.regAddress = 0x51;
@@ -336,7 +386,20 @@ uint16_t DUCATI_R8::DUCATI_getAvP()
     //     .regAddress = 0x51,
     //     .regCount = 0x02};
     DUCATI_transmit(this->msg_Query);
-    DUCATI_Master_Receive(buffer, 9);
-    uint16_t AvP = ((uint16_t)buffer[5] << 8) | ((uint16_t)buffer[6]);
+    DUCATI_Master_Receive(this->DUCATI_avP, 9);
+    uint16_t AvP = ((uint16_t)this->DUCATI_avP[5] << 8) | ((uint16_t)this->DUCATI_avP[6]);
     return AvP;
+}
+
+void DUCATI_R8::getStatusContac(void)
+{
+    this->StatusIn[0] = HAL_GPIO_ReadPin(this->harware[0]->GPIO_PORT, this->harware[0]->GPIO_PIN);
+    this->StatusIn[1] = HAL_GPIO_ReadPin(this->harware[1]->GPIO_PORT, this->harware[1]->GPIO_PIN);
+    this->StatusIn[2] = HAL_GPIO_ReadPin(this->harware[2]->GPIO_PORT, this->harware[2]->GPIO_PIN);
+    this->StatusIn[3] = HAL_GPIO_ReadPin(this->harware[3]->GPIO_PORT, this->harware[3]->GPIO_PIN);
+    this->StatusIn[4] = HAL_GPIO_ReadPin(this->harware[4]->GPIO_PORT, this->harware[4]->GPIO_PIN);
+    this->StatusIn[5] = HAL_GPIO_ReadPin(this->harware[5]->GPIO_PORT, this->harware[5]->GPIO_PIN);
+    this->StatusIn[6] = HAL_GPIO_ReadPin(this->harware[6]->GPIO_PORT, this->harware[6]->GPIO_PIN);
+    this->StatusIn[7] = HAL_GPIO_ReadPin(this->harware[7]->GPIO_PORT, this->harware[7]->GPIO_PIN);
+    this->StatusIn[8] = HAL_GPIO_ReadPin(this->harware[8]->GPIO_PORT, this->harware[8]->GPIO_PIN);
 }

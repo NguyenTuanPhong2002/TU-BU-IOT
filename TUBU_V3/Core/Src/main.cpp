@@ -22,7 +22,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "sim.h"
+#include "ducati.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

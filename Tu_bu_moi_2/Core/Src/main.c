@@ -79,8 +79,8 @@ uint8_t byte_read = 0;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
-static void MX_USART2_UART_Init(void);
 static void MX_USART6_UART_Init(void);
+static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_RTC_Init(void);
 static void MX_USART1_UART_Init(void);
@@ -237,9 +237,9 @@ void SendDataToServer();
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -265,8 +265,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_USART2_UART_Init();
   MX_USART6_UART_Init();
+  MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   MX_RTC_Init();
   MX_USART1_UART_Init();
@@ -274,19 +274,19 @@ int main(void)
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
 
-  SIM_Init(PWR_GPIO_Port, PWR_Pin);
+  //SIM_Init(PWR_GPIO_Port, PWR_Pin);
 
-  HAL_UART_Transmit(&DEBUG_UART, (uint8_t *)"\r\nSIM_Init/102	 Connecting\r\n", 28, HAL_MAX_DELAY); // Truy�?n lệnh ATCommnd sang Sim
-  SIM_Config();
-  SIM_GetLocalTime(TimeString);
+  //HAL_UART_Transmit(&DEBUG_UART, (uint8_t *)"\r\nSIM_Init/102	 Connecting\r\n", 28, HAL_MAX_DELAY); // Truy�?n lệnh ATCommnd sang Sim
+  //SIM_Config();
+  //SIM_GetLocalTime(TimeString);
   HTTP_InfoTypeDef httpInfo = {0};
 
-  SIM_GetPhoneNumber(phoneNumber);
-  SplitTime(&GetMinSec);
-  Set_Time(5, Timeptr->Minute, Timeptr->Second);
-  Set_Alarm(Timeptr->Minute);
+  //SIM_GetPhoneNumber(phoneNumber);
+  //SplitTime(&GetMinSec);
+  //Set_Time(5, Timeptr->Minute, Timeptr->Second);
+  //Set_Alarm(Timeptr->Minute);
 
-  SIM_GetLocalTime(TimeString);
+  //SIM_GetLocalTime(TimeString);
   sprintf(jsonBuffer,
           "{\"TIME\":\"%s\""
           ",\"PN\":\"%s\""
@@ -310,11 +310,11 @@ int main(void)
           AvP, AvQ, (IN[0] ^ 0x01), (IN[1] ^ 0x01), (IN[2] ^ 0x01), (IN[3] ^ 0x01),
           (coil_ReceivedBuff[3] & 0x01), ((coil_ReceivedBuff[3] & 0x02) >> 1),
           ((coil_ReceivedBuff[3] & 0x04) >> 2), ((coil_ReceivedBuff[3] & 0x08) >> 3));
-  SIM_HTTP_POST(
-      "https://capacitor-129e8-default-rtdb.firebaseio.com/testA.json",
-      "application/json", jsonBuffer, &httpInfo);
+  //SIM_HTTP_POST(
+  //   "https://capacitor-129e8-default-rtdb.firebaseio.com/testA.json",
+  //    "application/json", jsonBuffer, &httpInfo);
 
-  HAL_UART_Receive_IT(&huart2, (uint8_t *)UART2_ReceivedBuff, 8);
+  HAL_UART_Receive_IT(&huart2, (uint8_t *)jsonBuffer, 8);
 
   /* USER CODE END 2 */
 
@@ -328,7 +328,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    SMS_process();
+    //SMS_process();
     SendDataToServer();
   }
 
@@ -336,23 +336,23 @@ int main(void)
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-   */
+  */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-   * in the RCC_OscInitTypeDef structure.
-   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI | RCC_OSCILLATORTYPE_HSE;
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -367,8 +367,9 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -381,10 +382,10 @@ void SystemClock_Config(void)
 }
 
 /**
- * @brief RTC Initialization Function
- * @param None
- * @retval None
- */
+  * @brief RTC Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_RTC_Init(void)
 {
 
@@ -401,7 +402,7 @@ static void MX_RTC_Init(void)
   /* USER CODE END RTC_Init 1 */
 
   /** Initialize RTC Only
-   */
+  */
   hrtc.Instance = RTC;
   hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
   hrtc.Init.AsynchPrediv = 127;
@@ -419,7 +420,7 @@ static void MX_RTC_Init(void)
   /* USER CODE END Check_RTC_BKUP */
 
   /** Initialize RTC and set the Time and Date
-   */
+  */
   sTime.Hours = 20;
   sTime.Minutes = 0;
   sTime.Seconds = 0;
@@ -440,14 +441,15 @@ static void MX_RTC_Init(void)
   }
 
   /** Enable the Alarm A
-   */
+  */
   sAlarm.AlarmTime.Hours = 0;
   sAlarm.AlarmTime.Minutes = 20;
   sAlarm.AlarmTime.Seconds = 0;
   sAlarm.AlarmTime.SubSeconds = 0;
   sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY | RTC_ALARMMASK_HOURS | RTC_ALARMMASK_SECONDS;
+  sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY|RTC_ALARMMASK_HOURS
+                              |RTC_ALARMMASK_SECONDS;
   sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
   sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
   sAlarm.AlarmDateWeekDay = 1;
@@ -459,13 +461,14 @@ static void MX_RTC_Init(void)
   /* USER CODE BEGIN RTC_Init 2 */
 
   /* USER CODE END RTC_Init 2 */
+
 }
 
 /**
- * @brief SDIO Initialization Function
- * @param None
- * @retval None
- */
+  * @brief SDIO Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_SDIO_SD_Init(void)
 {
 
@@ -486,13 +489,14 @@ static void MX_SDIO_SD_Init(void)
   /* USER CODE BEGIN SDIO_Init 2 */
 
   /* USER CODE END SDIO_Init 2 */
+
 }
 
 /**
- * @brief USART1 Initialization Function
- * @param None
- * @retval None
- */
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_USART1_UART_Init(void)
 {
 
@@ -518,13 +522,14 @@ static void MX_USART1_UART_Init(void)
   /* USER CODE BEGIN USART1_Init 2 */
 
   /* USER CODE END USART1_Init 2 */
+
 }
 
 /**
- * @brief USART2 Initialization Function
- * @param None
- * @retval None
- */
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_USART2_UART_Init(void)
 {
 
@@ -550,13 +555,14 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
+
 }
 
 /**
- * @brief USART3 Initialization Function
- * @param None
- * @retval None
- */
+  * @brief USART3 Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_USART3_UART_Init(void)
 {
 
@@ -582,13 +588,14 @@ static void MX_USART3_UART_Init(void)
   /* USER CODE BEGIN USART3_Init 2 */
 
   /* USER CODE END USART3_Init 2 */
+
 }
 
 /**
- * @brief USART6 Initialization Function
- * @param None
- * @retval None
- */
+  * @brief USART6 Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_USART6_UART_Init(void)
 {
 
@@ -614,11 +621,12 @@ static void MX_USART6_UART_Init(void)
   /* USER CODE BEGIN USART6_Init 2 */
 
   /* USER CODE END USART6_Init 2 */
+
 }
 
 /**
- * Enable DMA controller clock
- */
+  * Enable DMA controller clock
+  */
 static void MX_DMA_Init(void)
 {
 
@@ -636,13 +644,14 @@ static void MX_DMA_Init(void)
   /* DMA2_Stream2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
+
 }
 
 /**
- * @brief GPIO Initialization Function
- * @param None
- * @retval None
- */
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -656,26 +665,26 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3 | PWR_Pin | RST_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3|PWR_Pin|RST_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, DTR_Pin | GPIO_PIN_9 | GPIO_PIN_10, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, DTR_Pin|GPIO_PIN_9|GPIO_PIN_10, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12 | PWRD14_Pin | GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12|PWRD14_Pin|GPIO_PIN_15, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PC3 PWR_Pin RST_Pin */
-  GPIO_InitStruct.Pin = GPIO_PIN_3 | PWR_Pin | RST_Pin;
+  GPIO_InitStruct.Pin = GPIO_PIN_3|PWR_Pin|RST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : DTR_Pin PA9 PA10 */
-  GPIO_InitStruct.Pin = DTR_Pin | GPIO_PIN_9 | GPIO_PIN_10;
+  GPIO_InitStruct.Pin = DTR_Pin|GPIO_PIN_9|GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -683,13 +692,14 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : PE7 PE9 PE11 PE13
                            PE15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_7 | GPIO_PIN_9 | GPIO_PIN_11 | GPIO_PIN_13 | GPIO_PIN_15;
+  GPIO_InitStruct.Pin = GPIO_PIN_7|GPIO_PIN_9|GPIO_PIN_11|GPIO_PIN_13
+                          |GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB13 PB15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_15;
+  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -701,7 +711,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PD12 PWRD14_Pin PD15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_12 | PWRD14_Pin | GPIO_PIN_15;
+  GPIO_InitStruct.Pin = GPIO_PIN_12|PWRD14_Pin|GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -719,6 +729,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
 }
 
 /* USER CODE BEGIN 4 */
@@ -745,12 +756,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 }
 void SendDataToServer()
 {
-  if (RTC_Flag == true)
+  //if (RTC_Flag == true)
   {
-    SplitTime(&GetMinSec);
-    if (Timeptr->Minute % 10 == 0)
+    //SplitTime(&GetMinSec);
+    //if (Timeptr->Minute % 10 == 0)
     {
-      SIM_GetLocalTime(TimeString);
+      //SIM_GetLocalTime(TimeString);
       // Case 1:
       HAL_UART_Transmit(&huart6, (uint8_t *)RTU_CosFi, 8, 1000);
       RS485_Master_Receive(COSF_ReceivedBuff, 9);
@@ -797,7 +808,7 @@ void SendDataToServer()
       RS485_Master_Receive(coil_ReceivedBuff, 7);
       HAL_Delay(500);
       //		Case 10:
-      SIM_GetLocalTime(TimeString);
+      //SIM_GetLocalTime(TimeString);
       //		printf("CosFi: %.2f\n", CosFi);
       //		printf("Voltage: %.2f\n", Voltage);
       //		printf("Current: %.2f\n", Current);
@@ -840,13 +851,13 @@ void SendDataToServer()
               AvP, AvQ, (IN[0] ^ 0x01), (IN[1] ^ 0x01), (IN[2] ^ 0x01), (IN[3] ^ 0x01),
               (coil_ReceivedBuff[3] & 0x01), ((coil_ReceivedBuff[3] & 0x02) >> 1),
               ((coil_ReceivedBuff[3] & 0x04) >> 2), ((coil_ReceivedBuff[3] & 0x08) >> 3));
-      SIM_HTTP_POST(
-          "https://capacitor-129e8-default-rtdb.firebaseio.com/testA.json",
-          "application/json", jsonBuffer, &httpInfo);
+//      SIM_HTTP_POST(
+//          "https://capacitor-129e8-default-rtdb.firebaseio.com/testA.json",
+//          "application/json", jsonBuffer, &httpInfo);
       HAL_Delay(120000);
-      SplitTime(&GetMinSec);
-      Set_Time(5, Timeptr->Minute, Timeptr->Second);
-      Set_Alarm(Timeptr->Minute);
+//      SplitTime(&GetMinSec);
+//      Set_Time(5, Timeptr->Minute, Timeptr->Second);
+//      Set_Alarm(Timeptr->Minute);
     }
   }
   RTC_Flag = false;
@@ -948,9 +959,9 @@ PUTCHAR_PROTOPYTE
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -959,14 +970,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
+#ifdef  USE_FULL_ASSERT
 /**
- * @brief  Reports the name of the source file and the source line number
- *         where the assert_param error has occurred.
- * @param  file: pointer to the source file name
- * @param  line: assert_param error line source number
- * @retval None
- */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "g:/TU-BU-IOT",
-      "program": "g:/TU-BU-IOT/build/Debug/outDebug",
+      "cwd": "g:/TU-BU-IOT/Tu_bu_moi_2/TuBu/RS485",
+      "program": "g:/TU-BU-IOT/Tu_bu_moi_2/TuBu/RS485/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

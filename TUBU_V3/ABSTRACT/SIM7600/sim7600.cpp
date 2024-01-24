@@ -43,7 +43,7 @@ APP_StatusTypeDef SIM7600::SIM_sendATCommand(const char *command, const char *ex
 
     /* Clear buffer before receive new data */
     memset(this->buffer, '\0', SIM_BUFFER_SIZE);
-
+ 
     /* Sends command to SIM module: command + "\r\n" */
     HAL_UART_Transmit((UART_HandleTypeDef *)this->sim->huart, (uint8_t *)command, strlen(command),
                       HAL_MAX_DELAY);

@@ -64,12 +64,21 @@ typedef struct
     DMA_HandleTypeDef *hdma;
 } DUCATI_R8ptr;
 
+typedef struct
+{
+    GPIO_TypeDef *GPIO_PORT;
+    uint8_t GPIO_PIN;
+}STATUS_CONTACTOR;
+
+
 class DUCATI_R8 : public DUCATI
 {
 private:
     DUCATI_R8ptr *ducatiR8;
 
     RS485Query_t msg_Query;
+
+    STATUS_CONTACTOR *harware[9];
 
     void OnPower();
     void OffPower();
@@ -96,6 +105,8 @@ public:
     uint16_t DUCATI_getActivePower();
     uint16_t DUCATI_getReactivePower();
     uint16_t DUCATI_getAvP();
+
+    void getStatusContac(void);
 };
 
 #endif /* DUCATI_R8_DUCATIR8_H_ */

@@ -267,6 +267,8 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 	while (1) {
 		/* USER CODE END WHILE */
+
+		/* USER CODE BEGIN 3 */
 		if (flagUCA == 1) {
 			flagUCA = 0;
 			removeFirstChar(buffer);
@@ -292,8 +294,6 @@ int main(void) {
 
 			HAL_UART_Receive_DMA(&huart2, (uint8_t*) buffer, MAX_LENGTH);
 		}
-		/* USER CODE BEGIN 3 */
-
 	}
 	/* USER CODE END 3 */
 }
@@ -459,8 +459,6 @@ static void MX_GPIO_Init(void) {
 	/* USER CODE END MX_GPIO_Init_1 */
 
 	/* GPIO Ports Clock Enable */
-	__HAL_RCC_GPIOC_CLK_ENABLE();
-	__HAL_RCC_GPIOH_CLK_ENABLE();
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 	__HAL_RCC_GPIOE_CLK_ENABLE();
