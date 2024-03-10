@@ -1,0 +1,248 @@
+/*
+ * sim7600.c
+ *
+ *  Created on: Mar 9, 2024
+ *      Author: Trump
+ */
+#include <sim7600.h>
+#include <string.h>
+#include <stdbool.h>
+
+char rxBuffer[RX_LEN]= {0};
+
+/**
+ * @brief  Send command and check expected information in response. If
+ * no data received, return timeout.
+ * @param me [in] Pointer to SIM7600_HandleTypeDef.
+ * @param command [in] Pointer to AT command string.
+ * @param expect [in] The expected information string in response buffer.
+ * @param unexpect [in] The unexpected information string in response buffer.
+ * @param timeout [in] The timeout to cancel function if no response or no information is matched.
+ * @retval  status
+ */
+SIM_StatusTypeDef SIM7600_sendATCommand(SIM7600_HandleTypeDef *const me, const char *command, const char *expect, const char *unexpect, uint32_t timeout)
+{
+	if (me == NULL || command == NULL || expect == NULL || unexpect == NULL)
+	{
+		return SIM_ERROR;
+	}
+	SIM_StatusTypeDef status = SIM_BUSY;
+	/* Enable UART receive to IDLE DMA */
+	HAL_UARTEx_ReceiveToIdle_DMA((UART_HandleTypeDef *)me->huart,(uint8_t *)(me->RxBuffer) ,RX_LEN);
+	__HAL_DMA_DISABLE_IT((DMA_HandleTypeDef *)me->hdma, DMA_IT_HT);
+
+	/* Clear buffer before receive new data */
+	memset((uint8_t *)(me->RxBuffer), '\0', RX_LEN);
+
+	/* Sends command to SIM module: command + "\r\n" */
+	HAL_UART_Transmit((UART_HandleTypeDef *)me->huart, (uint8_t *)command, strlen(command),HAL_MAX_DELAY);
+	HAL_UART_Transmit((UART_HandleTypeDef *)me->huart, (uint8_t *)"\r\n", 2, 1000);
+
+	uint32_t tickStart = HAL_GetTick();
+	while (status == SIM_BUSY)
+	{
+		const uint32_t timeElapsed = HAL_GetTick() - tickStart;
+
+		if (timeElapsed >= timeout)
+		{
+			status = SIM_TIMEOUT;
+			break;
+		}
+		if (me->RxFlag == true)
+		{
+			if (strstr((char *)(me->RxBuffer), "OK") != NULL)
+			{
+				status = SIM_OK;
+				break;
+			}
+			else if (strstr((char *)(me->RxBuffer), "ERROR") != NULL)
+			{
+				status = SIM_ERROR;
+				break;
+			}
+		}
+	}
+	//	print((char*) rxBuffer);
+	me->RxFlag = false;
+	return status;
+}
+/**
+ * @brief  Wake up module SIM
+ * @param me [in] A pointer to SIM7600_HandleTypeDef structure
+ * @retval None
+ */
+void SIM7600_wakeup(SIM7600_HandleTypeDef *const me)
+{
+	if (me == NULL)
+	{
+		return;
+	}
+	HAL_GPIO_WritePin(me->sleepPort, me->sleepPin, GPIO_PIN_RESET); // DTR Low: Wakeup, DTR high: Sleep
+	HAL_Delay(100UL);
+}
+
+/**
+ * The function SIM7600_POWER_ON turns on the SIM7600 module by setting a GPIO pin high and delaying
+ * for 100 milliseconds.
+ *
+ * @param me `SIM7600_HandleTypeDef *const me` is a pointer to a structure `SIM7600_HandleTypeDef`
+ * which contains information about the SIM7600 module. The structure likely includes members such as
+ * `powerEnPort` (GPIO port for power enable), `powerEnPin` (GPIO pin for power
+ *
+ * @return If the input parameter `me` is `NULL`, the function will return without executing the rest
+ * of the code inside the function.
+ */
+void SIM7600_POWER_ON(SIM7600_HandleTypeDef *const me)
+{
+	if (me == NULL)
+	{
+		return;
+	}
+	HAL_GPIO_WritePin(me->powerEnPort, me->powerEnPin, GPIO_PIN_SET);
+	HAL_Delay(100UL);
+}
+
+/**
+ * The function SIM7600_POWER_OFF turns off the power to a SIM7600 module after checking for a valid
+ * handle.
+ *
+ * @param me The `me` parameter is a pointer to a structure of type `SIM7600_HandleTypeDef`. This
+ * structure likely contains information and configurations related to the SIM7600 module, such as GPIO
+ * ports and pins used for power control.
+ *
+ * @return If the input parameter `me` is `NULL`, the function will return without performing any
+ * further actions.
+ */
+void SIM7600_POWER_OFF(SIM7600_HandleTypeDef *const me)
+{
+	if (me == NULL)
+	{
+		return;
+	}
+	HAL_GPIO_WritePin(me->powerEnPort, me->powerEnPin, GPIO_PIN_RESET);
+	HAL_Delay(100UL);
+}
+
+void SIM7600_PWRKEY_ON(SIM7600_HandleTypeDef *const me)
+{
+	if (me == NULL)
+	{
+		return;
+	}
+	HAL_GPIO_WritePin(me->pwrkeyPort, me->pwrkeyPin, GPIO_PIN_SET);
+	HAL_Delay(1000UL);
+	HAL_GPIO_WritePin(me->pwrkeyPort, me->pwrkeyPin, GPIO_PIN_RESET);
+	HAL_Delay(10000UL);
+}
+
+/**
+ * The function `SIM7600_RESET_ON` resets a SIM7600 module by toggling a GPIO pin after a specific
+ * delay.
+ *
+ * @param me The `me` parameter in the `SIM7600_RESET_ON` function is a pointer to a structure of type
+ * `SIM7600_HandleTypeDef`. This structure likely contains information about the SIM7600 module, such
+ * as the GPIO port and pin used for resetting the module.
+ *
+ * @return If the input parameter `me` is `NULL`, the function will return without performing any
+ * actions.
+ */
+void SIM7600_RESET_ON(SIM7600_HandleTypeDef *const me)
+{
+	if (me == NULL)
+	{
+		return;
+	}
+	HAL_GPIO_WritePin(me->resetPort, me->resetPin, GPIO_PIN_SET);
+	HAL_Delay(500UL);
+	HAL_GPIO_WritePin(me->resetPort, me->resetPin, GPIO_PIN_RESET);
+	HAL_Delay(1000UL);
+}
+
+/**
+ * @brief  Put the module to sleep
+ * @param me [in] A pointer to SIM7600_HandleTypeDef structure
+ * @retval None
+ */
+void SIM7600_sleep(SIM7600_HandleTypeDef *const me)
+{
+	if (me == NULL)
+	{
+		return;
+	}
+	SIM7600_sendATCommand(me, "AT+CSCLK=1","OK","ERROR", 3000);
+	HAL_GPIO_WritePin(me->sleepPort, me->sleepPin, GPIO_PIN_SET);
+	HAL_Delay(100UL);
+}
+
+/**
+ * @brief  Initializes module SIM
+ * @param me [in] A pointer to SIM7600_HandleTypeDef structure
+ * @retval THT_StatusTypeDef status
+ */
+SIM_StatusTypeDef SIM7600_init(SIM7600_HandleTypeDef *const me)
+{
+	if (me == NULL)
+	{
+		return SIM_ERROR;
+	}
+
+	me->huart->Instance = USART6;
+	me->huart->Init.BaudRate = 115200;
+	me->huart->Init.WordLength = UART_WORDLENGTH_8B;
+	me->huart->Init.StopBits = UART_STOPBITS_1;
+	me->huart->Init.Parity = UART_PARITY_NONE;
+	me->huart->Init.Mode = UART_MODE_TX_RX;
+	me->huart->Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	me->huart->Init.OverSampling = UART_OVERSAMPLING_16;
+
+	me->RxFlag = false;
+
+	if (HAL_UART_Init(me->huart) != HAL_OK)
+	{
+		//	    Error_Handler();
+	}
+
+	/* Power on and reset module */
+	SIM7600_wakeup(me);
+	SIM7600_POWER_ON(me);
+	SIM7600_RESET_ON(me);
+
+	/* Enable receive data through UART port */
+	HAL_UARTEx_ReceiveToIdle_DMA((UART_HandleTypeDef *)me->huart, (uint8_t *)(me->RxBuffer),RX_LEN);
+	__HAL_DMA_DISABLE_IT((DMA_HandleTypeDef *)me->hdma, DMA_IT_HT);
+
+	/* Powerkey on */
+	SIM7600_PWRKEY_ON(me);
+
+	for (size_t i = 0u; i < 60u; i++)
+	{
+//		SIM7600_sendATCommand(me, "ATE0", SIM_URC_OK, SIM_URC_ERROR, 500); /* Must be used this command */
+		if (SIM_OK == SIM7600_sendATCommand(me, "AT", "OK", "ERROR", 250))
+		{
+			SIM7600_sendATCommand(me, "ATE0", "OK", "ERROR", 500); /* Must be used this command */
+
+			if (SIM_OK == SIM7600_sendATCommand(me, "AT+CPIN?", "OK", "ERROR", 4000))
+			{
+				SIM7600_sendATCommand(me, "ATI", "OK", "ERROR", 500);
+				SIM7600_sendATCommand(me, "AT+CREG?", "+CREG: 0,1","ERROR"	, 4000);	// "\r\n+CREG: 0,1\r\n\r\nOK\r\n"
+				SIM7600_sendATCommand(me, "AT+CGREG?", "+CGREG: 0,1", "ERROR", 4000); // "\r\n+CGREG: 0,1\r\n\r\nOK\r\n"
+				SIM7600_sendATCommand(me, "AT+CNMP=39", "OK", "ERROR", 4000);
+				SIM7600_sendATCommand(me, "AT+CTZU=0", "OK", "ERROR", 4000);					//"\r\nOK\r\n"
+				SIM7600_sendATCommand(me, "AT+CPBS=\"ME\"", "OK", "ERROR", 4000);				//"\r\nOK\r\n"
+				SIM7600_sendATCommand(me, "AT+CPMS=\"SM\",\"SM\",\"SM\"", "OK", "ERROR", 4000); //"\r\n+CPMS: 0,40,0,40,0,40\r\n\r\nOK\r\n"
+				SIM7600_sendATCommand(me, "AT+CMGD=,4", "OK", "ERROR", 4000);
+				SIM7600_sendATCommand(me, "AT+CMGF=1", "OK", "ERROR", 4000);
+				SIM7600_sendATCommand(me, "AT+CNMI=2,1,0,0,0", "OK", "ERROR", 4000);
+				SIM7600_sendATCommand(me, "AT+CFGRI=0", "OK", "ERROR", 4000);
+
+//				HAL_GPIO_WritePin(L2_GPIO_Port, L2_Pin, 1);
+
+				return SIM_OK;
+			}
+		}
+	}
+
+	return SIM_ERROR;
+}
+
+

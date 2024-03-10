@@ -1,0 +1,44 @@
+/*
+ * sim7600.h
+ *
+ *  Created on: Mar 9, 2024
+ *      Author: Trump
+ */
+
+#ifndef INC_SIM7600_H_
+#define INC_SIM7600_H_
+
+#define RX_LEN	560
+
+#include "stm32f4xx_hal.h"
+/**
+ * @brief SIM7600_HandleTypeDef structure definition
+ *
+ */
+typedef struct {
+
+	uint16_t powerEnPin;
+	uint16_t resetPin;
+	uint16_t sleepPin;
+	uint16_t pwrkeyPin;
+	GPIO_TypeDef *resetPort;
+	GPIO_TypeDef *sleepPort;
+	GPIO_TypeDef *pwrkeyPort;
+	GPIO_TypeDef *powerEnPort;
+	UART_HandleTypeDef *huart;
+	DMA_HandleTypeDef *hdma;
+
+} SIM7600_HandleTypeDef;
+
+void SIM7600_wakeup(SIM7600_HandleTypeDef *const me);
+void SIM7600_POWER_ON(SIM7600_HandleTypeDef *const me);
+void SIM7600_POWER_OFF(SIM7600_HandleTypeDef *const me);
+void SIM7600_PWRKEY_ON(SIM7600_HandleTypeDef *const me);
+void SIM7600_RESET_ON(SIM7600_HandleTypeDef *const me);
+void SIM7600_sleep(SIM7600_HandleTypeDef *const me);
+
+
+typedef enum {
+	SIM_OK = 0x00U, SIM_ERROR = 0x01U, SIM_BUSY = 0x02U, SIM_TIMEOUT = 0x03U
+}SIM_StatusTypeDef;
+#endif /* INC_SIM7600_H_ */

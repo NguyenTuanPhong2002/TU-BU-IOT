@@ -43,7 +43,7 @@ extern UART_HandleTypeDef huart1;
 
 typedef enum
 {
-	SIM_OK = 0x00U, SIM_ERROR = 0x01U, SIM_BUSY = 0x02U, SIM_TIMEOUT = 0x03U
+	SIM_OK = 0x00U, SIM_ERROR = 0x01U, SIM_BUSY = 0x02U, SIM_TIMEOUT = 0x03U	
 } SIM_StatusTypeDef;
 
 typedef enum

@@ -428,7 +428,7 @@ SIM_StatusTypeDef sendATcommand(const char *ATCommand, const char *Response, uin
 	SIM_StatusTypeDef status = SIM_BUSY;
 	memset((char*) rxBuffer, 0, RX_LEN);		// Xóa hết buffer
 	char txBuffer[RX_LEN] = { 0 };			// Khai báo txBuffer gửi đi
-
+	
 	sprintf((char*) txBuffer, "%s\r\n", ATCommand);		// Ép buffer thành lệnh nhập vào
 
 	HAL_UART_Transmit(&SIM_UART, (uint8_t*) txBuffer, (uint16_t)strlen(txBuffer), HAL_MAX_DELAY); // Truyền lệnh ATCommnd sang Sim
@@ -453,7 +453,7 @@ SIM_StatusTypeDef sendATcommand(const char *ATCommand, const char *Response, uin
 	RxFlag = false;
 	return status;
 }
-SIM_StatusTypeDef SIM_waitRespond(const char *Response, uint32_t Timeout)
+SIM_StatusTypeDef SIM_waitRespond(const char *Response	, uint32_t Timeout)
 {
 	SIM_StatusTypeDef status = SIM_BUSY;
 	uint32_t tickStart = HAL_GetTick();
