@@ -1,0 +1,5 @@
+../lora_1/lora.c:11:19:LORA_init	16	static
+../lora_1/lora.c:20:19:LORA_transmit	32	static
+../lora_1/lora.c:30:19:LORA_receivePolling	32	static
+../lora_1/lora.c:40:19:LORA_startReceiveIT	16	static
+../lora_1/lora.c:50:19:LORA_receiveIT	24	static

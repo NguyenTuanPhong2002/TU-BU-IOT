@@ -1,0 +1,5 @@
+../lora_1/lora.c:11:19:LORA_init	2
+../lora_1/lora.c:20:19:LORA_transmit	3
+../lora_1/lora.c:30:19:LORA_receivePolling	3
+../lora_1/lora.c:40:19:LORA_startReceiveIT	2
+../lora_1/lora.c:50:19:LORA_receiveIT	3
