@@ -1,0 +1,4 @@
+../Interface/logData/logData.h:40:21:static logData* logData::getInstance()	16	static
+../Interface/interface.cpp:13:1:interface::interface()	16	static
+../Interface/interface.cpp:17:1:interface::~interface()	16	static
+../Interface/interface.cpp:21:6:void interface::initMain()	16	static

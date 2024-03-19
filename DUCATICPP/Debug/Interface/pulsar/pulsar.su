@@ -1,0 +1,21 @@
+../Interface/pulsar/../logData/logData.h:40:21:static logData* logData::getInstance()	16	static
+../Interface/pulsar/pulsar.h:38:9:constexpr pulsar::pulsarConfig::pulsarConfig()	16	static
+../Interface/pulsar/pulsar.h:56:9:constexpr pulsar::parentData::parentData()	16	static
+../Interface/pulsar/pulsar.cpp:13:1:pulsar::pulsar()	16	static
+../Interface/pulsar/pulsar.cpp:17:1:pulsar::~pulsar()	16	static
+../Interface/pulsar/pulsar.cpp:21:6:void pulsar::modbusOnPower()	16	static
+../Interface/pulsar/pulsar.cpp:33:6:void pulsar::modbusOffPower()	16	static
+../Interface/pulsar/pulsar.cpp:59:6:void pulsar::modbusTransmit()	16	static
+../Interface/pulsar/pulsar.cpp:69:6:void pulsar::modbusReceive()	16	static
+../Interface/pulsar/pulsar.cpp:79:6:void pulsar::modbusOff()	16	static
+../Interface/pulsar/pulsar.cpp:97:10:uint16_t pulsar::calculateCRC(const uint8_t*, uint8_t)	40	static
+../Interface/pulsar/pulsar.cpp:121:6:void pulsar::SET_FLAG()	16	static
+../Interface/pulsar/pulsar.cpp:129:6:void pulsar::RESET_FLAG()	16	static
+../Interface/pulsar/pulsar.cpp:139:6:bool pulsar::GET_FLAG()	16	static
+../Interface/pulsar/pulsar.cpp:152:6:bool pulsar::Get_size(uint16_t)	16	static
+../Interface/pulsar/pulsar.cpp:172:6:bool pulsar::pulsarSendCommand(uint8_t*, uint8_t, uint32_t)	40	static
+../Interface/pulsar/pulsar.cpp:211:6:bool pulsar::getFirmwareID()	32	static
+../Interface/pulsar/pulsar.cpp:227:10:uint16_t pulsar::hardwareID()	32	static
+../Interface/pulsar/pulsar.cpp:244:10:uint16_t pulsar::gain()	32	static
+../Interface/pulsar/pulsar.cpp:259:10:uint16_t pulsar::serialNumber()	32	static
+../Interface/pulsar/pulsar.cpp:275:7:float pulsar::getFlowVelocity()	72	static

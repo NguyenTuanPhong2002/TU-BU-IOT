@@ -1,0 +1,7 @@
+../Interface/logData/logData.h:28:12:constexpr logData::logDataConfig::logDataConfig()	16	static
+../Interface/logData/logData.cpp:16:1:logData::logData()	16	static
+../Interface/logData/logData.cpp:20:1:logData::~logData()	16	static
+../Interface/logData/logData.cpp:24:6:)	524	static
+../Interface/logData/logData.cpp:41:6:)	524	static
+../Interface/logData/logData.cpp:56:6:)	524	static
+../Interface/logData/logData.cpp:73:6:)	524	static
