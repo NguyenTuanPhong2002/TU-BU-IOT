@@ -1,6 +1,0 @@
-../SD/sd.c:21:19:SD_mount	2
-../SD/sd.c:38:19:SD_unmount	2
-../SD/sd.c:55:19:SD_createFile	4
-../SD/sd.c:96:19:SD_updateFile	5
-../SD/sd.c:148:10:SD_getFileSize	3
-../SD/sd.c:176:19:SD_createDir	4
