@@ -1,0 +1,12 @@
+../APPLICATION/DUCATI/ducati.c:10:6:Get_size	1
+../APPLICATION/DUCATI/ducati.c:17:10:calculateCRC	4
+../APPLICATION/DUCATI/ducati.c:56:6:ducatiSendCommand	5
+../APPLICATION/DUCATI/ducati.c:93:7:getVol	1
+../APPLICATION/DUCATI/ducati.c:105:7:getCosF	1
+../APPLICATION/DUCATI/ducati.c:117:7:getCurrent	1
+../APPLICATION/DUCATI/ducati.c:129:7:getFrequency	1
+../APPLICATION/DUCATI/ducati.c:141:9:getAvQ	1
+../APPLICATION/DUCATI/ducati.c:153:9:getAvP	1
+../APPLICATION/DUCATI/ducati.c:165:7:getActivePower	1
+../APPLICATION/DUCATI/ducati.c:177:7:getReactivePower	1
+../APPLICATION/DUCATI/ducati.c:203:10:getCoilStatus	1

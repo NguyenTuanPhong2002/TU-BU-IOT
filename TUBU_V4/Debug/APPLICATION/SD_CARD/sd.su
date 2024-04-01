@@ -1,0 +1,6 @@
+../APPLICATION/SD_CARD/sd.c:21:19:SD_mount	8	static
+../APPLICATION/SD_CARD/sd.c:38:19:SD_unmount	8	static
+../APPLICATION/SD_CARD/sd.c:55:19:SD_createFile	16	static
+../APPLICATION/SD_CARD/sd.c:96:19:SD_updateFile	32	static
+../APPLICATION/SD_CARD/sd.c:148:10:SD_getFileSize	24	static
+../APPLICATION/SD_CARD/sd.c:176:19:SD_createDir	16	static
