@@ -1,0 +1,4 @@
+../test/test.c:10:6:Get_size	1
+../test/test.c:16:10:calculateCRC	4
+../test/test.c:36:6:ducatiSendCommand	5
+../test/test.c:70:10:getVol	1

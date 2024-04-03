@@ -1,0 +1,14 @@
+../Core/Src/main.c:94:5:main	2
+../Core/Src/main.c:142:6:SystemClock_Config	3
+../Core/Src/main.c:181:13:MX_USART3_UART_Init	2
+../Core/Src/main.c:212:13:MX_GPIO_Init	1
+../Core/Src/main.c:238:6:response	1
+../Core/Src/main.c:243:6:deleteRxData	1
+../Core/Src/main.c:248:6:checkCommand	5
+../Core/Src/main.c:262:6:setDeviceID	2
+../Core/Src/main.c:281:6:getDeviceID	3
+../Core/Src/main.c:301:6:setLedState	6
+../Core/Src/main.c:333:6:getLedState	4
+../Core/Src/main.c:360:6:commandHandler	5
+../Core/Src/main.c:382:6:HAL_UARTEx_RxEventCallback	2
+../Core/Src/main.c:397:6:Error_Handler	1

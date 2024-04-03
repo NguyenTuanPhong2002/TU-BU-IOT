@@ -1,0 +1,10 @@
+21:55:30 **** Incremental Build of configuration Debug for project TestDucati ****
+make -j8 all 
+arm-none-eabi-size   TestDucati.elf 
+   text	   data	    bss	    dec	    hex	filename
+  15036	     20	   2180	  17236	   4354	TestDucati.elf
+Finished building: default.size.stdout
+ 
+
+21:55:31 Build Finished. 0 errors, 0 warnings. (took 552ms)
+

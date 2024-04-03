@@ -1,0 +1,28 @@
+06:36:39 **** Incremental Build of configuration Debug for project test ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F407xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:128:25: warning: implicit declaration of function 'commandHandler' [-Wimplicit-function-declaration]
+  128 |                         commandHandler();
+      |                         ^~~~~~~~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:360:6: warning: conflicting types for 'commandHandler'; have 'void()'
+  360 | void commandHandler() {
+      |      ^~~~~~~~~~~~~~
+../Core/Src/main.c:128:25: note: previous implicit declaration of 'commandHandler' with type 'void()'
+  128 |                         commandHandler();
+      |                         ^~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "test.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\skttr\OneDrive\Desktop\TU-BU-IOT\test\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="test.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: test.elf
+ 
+arm-none-eabi-size   test.elf 
+arm-none-eabi-objdump -h -S  test.elf  > "test.list"
+   text	   data	    bss	    dec	    hex	filename
+  18712	    112	   2040	  20864	   5180	test.elf
+Finished building: default.size.stdout
+ 
+Finished building: test.list
+ 
+
+06:36:41 Build Finished. 0 errors, 2 warnings. (took 1s.377ms)
+

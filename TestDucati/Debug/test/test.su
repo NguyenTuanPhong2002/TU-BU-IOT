@@ -1,0 +1,4 @@
+../test/test.c:10:6:Get_size	16	static
+../test/test.c:16:10:calculateCRC	32	static
+../test/test.c:36:6:ducatiSendCommand	40	static
+../test/test.c:70:10:getVol	32	static
