@@ -108,7 +108,7 @@ typedef struct lora
 	THT_StatusTypeDef (*receive)(struct lora *const me, uint8_t *pBuffer, uint16_t size, uint32_t timeout);
 	THT_StatusTypeDef (*startReceiveIT)(struct lora *const me);
 	THT_StatusTypeDef (*receiveIT)(struct lora *const me, uint8_t *pBuffer, uint16_t size);
-	THT_StatusTypeDef (*shutdown)(struct lora *const me);
+
 	int16_t (*getRSSI)(struct lora *const me);
 } LORA_HandleTypeDef;
 
@@ -118,11 +118,15 @@ typedef THT_StatusTypeDef (*loraReceive)(struct lora *const me, uint8_t *pBuffer
 typedef THT_StatusTypeDef (*loraStartReceiveOnIRQ)(struct lora *const me);
 typedef THT_StatusTypeDef (*loraReceiveOnIRQ)(struct lora *const me, uint8_t *pBuffer, uint16_t size);
 
+typedef int16_t (*loraGetRSSI)(struct lora *const me);
+
 THT_StatusTypeDef LORA_init(LORA_HandleTypeDef *const me);
 THT_StatusTypeDef LORA_receivePolling(LORA_HandleTypeDef *const me, uint8_t *pBuffer, uint16_t size, uint32_t timeout);
 THT_StatusTypeDef LORA_startReceiveIT(LORA_HandleTypeDef *const me);
 THT_StatusTypeDef LORA_receiveIT(LORA_HandleTypeDef *const me, uint8_t *pBuffer, uint16_t size);
 THT_StatusTypeDef LORA_transmit(LORA_HandleTypeDef *const me, const uint8_t *pBuffer, uint16_t size, uint32_t timeout);
+
+int16_t LORA_getRSSI(LORA_HandleTypeDef *const me);
 
 
 

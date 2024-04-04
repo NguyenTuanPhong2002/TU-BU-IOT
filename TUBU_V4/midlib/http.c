@@ -59,7 +59,7 @@ THT_StatusTypeDef HTTP_sendCurrentData(SIM_HTTPTypeDef *const me)
 	{
 		return THT_ERROR;
 	}
-	printf("%s\n", __FUNCTION__);
+//	printf("%s\n", __FUNCTION__);
 	/* Read level sensor data in value array string */
 	//char valuestring[60] = { 0 };
 
@@ -71,58 +71,56 @@ THT_StatusTypeDef HTTP_sendCurrentData(SIM_HTTPTypeDef *const me)
 	SIM_getData(simPtr, SIM_DR_RSSI | SIM_DR_NWTYPE | SIM_DR_IMEI, &simData);
 
 	/* Get time period string */
-	const char *pURL ;
-	HTTP_init(me, pURL, strlen(pURL), HTTP_URL_URI_RESULT);
+//	const char *pURL ;
+//	//HTTP_init(me, pURL, strlen(pURL), HTTP_URL_URI_RESULT);
 
 	/*-------------Send HTTP--------------*/
-	memset(me->data, '\0', SIM_HTTP_DATA_SIZE);
-	snprintf(me->data, SIM_HTTP_DATA_SIZE, "{\"%s\":{"
-			"\"%s\":\"%s\","
-			"\"%s\":\"%s\","
-			"\"%s\":\"%s\","
-			"\"%s\":\"%s\","
-			"\"%s\":[%s],"
-			"\"%s\":%d,"
-			"\"%s\":%d,"
-			"\"%s\":%d,"
-			"\"%s\":\"%s\""
-			"}}\n",
-
-	HTTP_JSON_KEY_SIGS, simData.rssi,
-	HTTP_JSON_KEY_NWTYPE, simData.network);
+//	memset(me->data, '\0', SIM_HTTP_DATA_SIZE);
+//	snprintf(me->data, SIM_HTTP_DATA_SIZE, "{\"%s\":{"
+//			"\"%s\":\"%s\","
+//			"\"%s\":\"%s\","
+//			"\"%s\":\"%s\","
+//			"\"%s\":\"%s\","
+//			"\"%s\":[%s],"
+//			"\"%s\":%d,"
+//			"\"%s\":%d,"
+//			"\"%s\":%d,"
+//			"\"%s\":\"%s\""
+//			"}}\n",
+//
+//	HTTP_JSON_KEY_SIGS, simData.rssi,
+//	HTTP_JSON_KEY_NWTYPE, simData.network);
 
 	//SDCARD_logData(sdcardPtr, sdcardPtr->currentFile, me->data,
 			//strlen(me->data));
 
 	/* Hạn chế gửi fail thì cho gửi thêm 1 lần nữa */
-	if (THT_OK != SIM_sendHTTP(simPtr, me))
-	{
-		if (strlen(me->data) > 160)    //Dữ liệu dài hơn 160 ký tự mới lưu lại, để phòng dữ liệu sai
-		{
-			//SDCARD_logData(sdcardPtr, SDCARD_LOST_FILE, me->data,
-					//strlen(me->data));
-		}
-
-		static uint16_t sendFailedPacketCounter = 0;
-
-		sendFailedPacketCounter++;
-
-		char reply[SIM_SMS_SIZE] = { 0 };
-
-		snprintf(reply, sizeof(reply), "%s:%s:%s,%s:%s,%s:%s,%s:%s");
-
-		/* Send message to telegram */
-		if (sendFailedPacketCounter >= 2u)
-		{
-			printf("Reset module SIM: send packet fail!\n");
-			SIM_init(simPtr);
-			SIM_setFunction(simPtr, SIM_MODE_FULL);
-			SIM_setLocalTimeAuto(simPtr);
-			memset(reply, '\0', SIM_SMS_SIZE);
-		}
-	}
-
-
+//	if (THT_OK != SIM_sendHTTP(simPtr, me))
+//	{
+//		if (strlen(me->data) > 160)    //Dữ liệu dài hơn 160 ký tự mới lưu lại, để phòng dữ liệu sai
+//		{
+//			SDCARD_logData(sdcardPtr, SDCARD_LOST_FILE, me->data,
+//					strlen(me->data));
+//		}
+//
+//		static uint16_t sendFailedPacketCounter = 0;
+//
+//		sendFailedPacketCounter++;
+//
+//		char reply[SIM_SMS_SIZE] = { 0 };
+//
+//		snprintf(reply, sizeof(reply), "%s:%s:%s,%s:%s,%s:%s,%s:%s");
+//
+//		/* Send message to telegram */
+//		if (sendFailedPacketCounter >= 2u)
+//		{
+//			printf("Reset module SIM: send packet fail!\n");
+//			SIM_init(simPtr);
+//			SIM_setFunction(simPtr, SIM_MODE_FULL);
+//			SIM_setLocalTimeAuto(simPtr);
+//			memset(reply, '\0', SIM_SMS_SIZE);
+//		}
+//	}
 	return THT_OK;
 }
 

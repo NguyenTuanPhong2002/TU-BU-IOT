@@ -1,6 +1,6 @@
 ../midlib/http.c:22:6:HTTP_process	1240	static
 ../midlib/http.c:37:19:HTTP_init	24	static
-../midlib/http.c:56:19:HTTP_sendCurrentData	272	static
-../midlib/http.c:136:19:HTTP_sendGetConfig	16	static
-../midlib/http.c:153:19:HTTP_sendGetFirmwareURL	120	static
-../midlib/http.c:194:19:HTTP_downloadFile	24	static
+../midlib/http.c:56:19:HTTP_sendCurrentData	88	static
+../midlib/http.c:134:19:HTTP_sendGetConfig	16	static
+../midlib/http.c:151:19:HTTP_sendGetFirmwareURL	120	static
+../midlib/http.c:192:19:HTTP_downloadFile	24	static

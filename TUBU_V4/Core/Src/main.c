@@ -23,7 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ducati.h"
-#include "lora.h"
+#include "rfm95.h"
 #include "sim7600.h"
 #include "sd.h"
 /* USER CODE END Includes */
@@ -49,7 +49,7 @@ RTC_HandleTypeDef hrtc;
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 
-UART_HandleTypeDef huart1;
+UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_usart2_rx;
@@ -63,8 +63,21 @@ SIM_HandleTypeDef *simPtr;
 SIM_HTTPTypeDef http = { 0 };
 SIM_DataTypeDef simData = { 0 };
 
-SIM_HTTPTypeDef *jsonBuffer;
-char TimeString[24] = {0};
+RFM95_HandleTypeDef rfm95w = { 0 };
+LORA_HandleTypeDef *lora;
+CFG_HandleTypeDef *cfgID;
+float CosF = 0.5;
+float Current = 0.1;
+float Voltage = 0.1;
+float ActivePower = 10.1;
+float ReactivePower = 10.2;
+float Frequency = 50;
+
+uint16_t AvP;
+uint16_t AvQ;
+uint16_t CoilStatus;
+extern char TimeString[24];
+uint8_t irqLoRaFlag = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -76,11 +89,12 @@ static void MX_SPI2_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_RTC_Init(void);
-static void MX_USART1_UART_Init(void);
+static void MX_UART4_Init(void);
 /* USER CODE BEGIN PFP */
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
 	if (huart->Instance == USART3) {
-
+		HAL_UARTEx_ReceiveToIdle_DMA(&huart3, ducati.buffer, LEVEL_BUFFER_SIZE);
+		__HAL_DMA_DISABLE_IT(ducati.dma, DMA_IT_HT);
 		ducati.DucatiFlag = true;
 		Get_size(&ducati, Size);
 
@@ -90,6 +104,13 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
 	}
 }
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	/* Wake up MCU from stop mode by any EXTI line */
+	if (GPIO_Pin == rfm95w.dio0) {
+		/* Set flag to read LoRa message */
+		irqLoRaFlag = 1;
+	}
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -101,16 +122,16 @@ void ducati_Init(void) {
 
 void CONTACTOR_READ()
 {
-  IN[0] = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0);
-  IN[1] = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1);
-  IN[2] = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_2);
-  IN[3] = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_3);
+  IN[0] = HAL_GPIO_ReadPin(DETECT1_GPIO_Port, DETECT1_Pin);
+  IN[1] = HAL_GPIO_ReadPin(DETECT2_GPIO_Port, DETECT2_Pin);
+  IN[2] = HAL_GPIO_ReadPin(DETECT3_GPIO_Port, DETECT3_Pin);
+  IN[3] = HAL_GPIO_ReadPin(DETECT4_GPIO_Port, DETECT4_Pin);
 }
 
 void SIM_Init(void) {
-	HAL_GPIO_WritePin(SIM7600_PWRKEY_GPIO_Port, SIM7600_PWRKEY_Pin,
-			GPIO_PIN_SET); // Bat PWR len
-
+//	HAL_GPIO_WritePin(SIM7600_PWRKEY_GPIO_Port, SIM7600_PWRKEY_Pin,
+//			GPIO_PIN_SET); // Bat PWR len
+//	HAL_GPIO_WritePin(SIM7600_RESET_GPIO_Port, SIM7600_RESET_Pin, GPIO_PIN_RESET);
 	printf("%s\n", __FUNCTION__);
 	/* Khởi tạo biến tĩnh để các giá trị khởi tạo không bị mất đi */
 	static SIM7600_HandleTypeDef sim7600 = { 0 };
@@ -123,10 +144,10 @@ void SIM_Init(void) {
 	sim7600.huart = &huart2;
 	sim7600.smsCnt = 0;
 	sim7600.smsPos = 0;
-//	sim7600.pwrkeyPin = SIM7600_PWRKEY_Pin;
-//	sim7600.pwrkeyPort = SIM7600_PWRKEY_GPIO_Port;
-//    sim7600.resetPort = SIM7600_RESET_GPIO_Port;
-//    sim7600.resetPin = SIM7600_RESET_Pin;
+	sim7600.pwrkeyPin = SIM7600_PWRKEY_Pin;
+	sim7600.pwrkeyPort = SIM7600_PWRKEY_GPIO_Port;
+    sim7600.resetPort = SIM7600_RESET_GPIO_Port;
+    sim7600.resetPin = SIM7600_RESET_Pin;
 //    sim7600.sleepPort = SIM7600_DTR_GPIO_Port;
 //    sim7600.sleepPin = SIM7600_DTR_Pin;
 //    sim7600.powerEnPort = SIM7600_PWREN_GPIO_Port;
@@ -168,10 +189,10 @@ void SIM_Init(void) {
 	/* Khởi tạo module SIM */
 	if (THT_OK != SIM_init(simPtr)) {
 		printf("Sim init fail\n");
-		HAL_UART_Transmit(&huart2, "SIM START ERROR: \n",
+		HAL_UART_Transmit(&huart4, "SIM START ERROR: \n",
 				sizeof("SIM START ERROR: \n"), HAL_MAX_DELAY);
 	} else {
-		HAL_UART_Transmit(&huart2, "SIM START OK: \n",
+		HAL_UART_Transmit(&huart4, "SIM START OK: \n",
 				sizeof("SIM START OK: \n"), HAL_MAX_DELAY);
 		char pTime[100] = { };
 		/* Dưa module SIM vào chế độ hoạt động đầy đủ chức năng */
@@ -183,53 +204,134 @@ void SIM_Init(void) {
 						| SIM_DR_TEMP, &simData);
 	}
 }
+void CFG_Init() {
+	CFG_HandleTypeDef cfg = { 0 };
+	cfgID = &cfg;
+
+	//  CFG_getID(device);
+	//  CFG_getMaster(device);
+
+	CFG_setDeviceID(cfgID, "0982586020", strlen("0982586020"));
+	CFG_setDeviceMaster(cfgID, "0982586021", strlen("0982586021"));
+
+	CFG_writeEEPROM(cfgID);
+}
+
+void LORA_begin() {
+	lora = (LORA_HandleTypeDef*) &rfm95w;
+
+	rfm95w.resetPort = RFM95_RS_GPIO_Port;
+	rfm95w.resetPin = RFM95_RS_Pin;
+	rfm95w.nssPort = RFM95_NSS_GPIO_Port;
+	rfm95w.nssPin = RFM95_NSS_Pin;
+	rfm95w.dio0Port = RFM95_DIO0_GPIO_Port;
+	rfm95w.dio0 = RFM95_DIO0_Pin;
+	rfm95w.hspi = &hspi2;
+
+	rfm95w.parent.init = (loraInit) &RFM95_init;
+	rfm95w.parent.transmit = (loraTransmit) &RFM95_transmit;
+	rfm95w.parent.receive = (loraReceive) &RFM95_receiveContinuous;
+	rfm95w.parent.startReceiveIT =
+			(loraStartReceiveOnIRQ) &RFM95_startReceiveIT;
+	rfm95w.parent.receiveIT = (loraReceiveOnIRQ) &RFM95_receiveIT;
+
+	rfm95w.parent.getRSSI = (loraGetRSSI) &RFM95_getRSSI;
+
+}
+// Should transmit with 8bits to distance more far
+uint8_t CRC8XOR(const uint8_t *array, size_t size) {  
+	uint8_t value = 0;
+	for (size_t i = 0; i < size; i++) {
+		value ^= array[i];
+	}
+	return value;
+}
+
+void processValue() {
+	uint8_t messLora[LORA_REQUEST_SIZE] = { 0 };
+
+	char buff[100] = { 0 };
+	sprintf(buff, "Vol = %.2f", Voltage);
+	print(buff);
+
+	char *id = CFG_getDeviceID(cfgID);
+	char *master = CFG_getDeviceMaster(cfgID);
+
+	messLora[0] = CRC8XOR((uint8_t*) id, strlen(id));
+	messLora[1] = CRC8XOR((uint8_t*) master, strlen(master));
+	messLora[2] = Voltage;
+	messLora[14] = CRC8XOR(messLora, 256);
+	LORA_transmit(lora, messLora, 4, 1000);
+}
+
+void loraHandle() {
+
+	uint8_t msgResLoRa[LORA_RESPONSE_SIZE] = { 0 };
+	uint8_t messLora[LORA_REQUEST_SIZE] = { 0 };
+
+
+	LORA_startReceiveIT(lora);
+	uint16_t timeStap = HAL_GetTick();
+	while (HAL_GetTick() - timeStap < 60000) {
+		if (irqLoRaFlag) {
+			irqLoRaFlag = 0;
+			LORA_receiveIT(lora, msgResLoRa, LORA_RESPONSE_SIZE);
+			if (msgResLoRa[0] == messLora[0] && msgResLoRa[1] == messLora[1]) {
+				LORA_transmit(lora, messLora, LORA_REQUEST_SIZE, 1000);
+			}
+			break;
+		}
+	}
+}
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
-int main(void) {
-	/* USER CODE BEGIN 1 */
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+  /* USER CODE BEGIN 1 */
 
-	/* USER CODE END 1 */
+  /* USER CODE END 1 */
 
-	/* MCU Configuration--------------------------------------------------------*/
+  /* MCU Configuration--------------------------------------------------------*/
 
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
 
-	/* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */
 
-	/* USER CODE END Init */
+  /* USER CODE END Init */
 
-	/* Configure the system clock */
-	SystemClock_Config();
+  /* Configure the system clock */
+  SystemClock_Config();
 
-	/* USER CODE BEGIN SysInit */
+  /* USER CODE BEGIN SysInit */
 
-	/* USER CODE END SysInit */
+  /* USER CODE END SysInit */
 
-	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
-	MX_DMA_Init();
-	MX_SPI1_Init();
-	MX_SPI2_Init();
-	MX_USART2_UART_Init();
-	MX_USART3_UART_Init();
-	MX_FATFS_Init();
-	MX_RTC_Init();
-	MX_USART1_UART_Init();
-	/* USER CODE BEGIN 2 */
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_SPI1_Init();
+  MX_SPI2_Init();
+  MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
+  MX_FATFS_Init();
+  MX_RTC_Init();
+  MX_UART4_Init();
+  /* USER CODE BEGIN 2 */
 	ducati_Init();
-	CONTACTOR_READ();
+  CONTACTOR_READ();
+	LORA_begin() ;
 	SIM_Init();
 	HTTP_init(&http,
 			"https://capacitor-129e8-default-rtdb.firebaseio.com/citx.json",
 			strlen(
 					"https://capacitor-129e8-default-rtdb.firebaseio.com/citx.json"),
 			HTTP_URL_URI_RESULT);
-	 sprintf(jsonBuffer->data,
+	sprintf(http.data,
 		"{\"CosFi\":\"%.2f\""
 		",\"Three-phase Equivalent Voltage\":\"%.2f\""
 		",\"Three-phase Equivalent Current\":\"%.2f\""
@@ -237,426 +339,450 @@ int main(void) {
 		",\"ActivePowe\":\"%.2f\""
 		",\"ReactivePower\":\"%.2f\""
 		",\"Three-phase equivalent ActivePower\":\"%d\""
-		",\"Three-phase equivalent ReactivePower\":\"%d\"}",
-		getCosF(&ducati), getVol(&ducati),
-		getCurrent(&ducati), getFrequency(&ducati), getActivePower(&ducati), getReactivePower(&ducati),
-		getAvP(&ducati), getAvQ(&ducati));
+		",\"Three-phase equivalent ReactivePower\":\"%d\""
+	    ",\"CTT1\":\"%u\""
+	    ",\"CTT2\":\"%u\""
+	    ",\"CTT3\":\"%u\""
+	    ",\"CTT4\":\"%u\"}",
+		CosF, Voltage, Current, Frequency,
+		ActivePower, ReactivePower, AvP, AvQ,
+	    (IN[0] ^ 0x01),(IN[1] ^ 0x01),(IN[2] ^ 0x01),(IN[3] ^ 0x01));
 
-	 HTTP_sendCurrentData(jsonBuffer);
-	/* USER CODE END 2 */
+	 SIM_sendHTTP(simPtr, &http);
+   
+  if (SIM_sendHTTP(simPtr, &http) == THT_ERROR)
+  {
+      loraHandle();
+  }
+  /* USER CODE END 2 */
 
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
 	while (1) {
-		/* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-		/* USER CODE BEGIN 3 */
-		getVol(&ducati);
-		getCosF(&ducati);
-		getCurrent(&ducati);
-		getFrequency(&ducati);
+    /* USER CODE BEGIN 3 */
+		Voltage = getVol(&ducati);
+		CosF = getCosF(&ducati);
+		Current = getCurrent(&ducati);
+		Frequency = getFrequency(&ducati);
 
-		getAvQ(&ducati);
-		getAvP(&ducati);
-		getActivePower(&ducati);
-		getReactivePower(&ducati);
-		getCoilStatus(&ducati);
+		AvQ = getAvQ(&ducati);
+		AvP = getAvP(&ducati);
+		ActivePower = getActivePower(&ducati);
+		ReactivePower = getReactivePower(&ducati);
+		CoilStatus = getCoilStatus(&ducati);
 		HAL_Delay(1000);
 	}
-	/* USER CODE END 3 */
+  /* USER CODE END 3 */
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
-void SystemClock_Config(void) {
-	RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
-	RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-	/** Configure the main internal regulator output voltage
-	 */
-	__HAL_RCC_PWR_CLK_ENABLE();
-	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-	/** Initializes the RCC Oscillators according to the specified parameters
-	 * in the RCC_OscInitTypeDef structure.
-	 */
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI
-			| RCC_OSCILLATORTYPE_HSE;
-	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-	RCC_OscInitStruct.LSIState = RCC_LSI_ON;
-	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-	RCC_OscInitStruct.PLL.PLLM = 25;
-	RCC_OscInitStruct.PLL.PLLN = 336;
-	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-	RCC_OscInitStruct.PLL.PLLQ = 4;
-	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
-		Error_Handler();
-	}
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 25;
+  RCC_OscInitStruct.PLL.PLLN = 336;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
-	/** Initializes the CPU, AHB and APB buses clocks
-	 */
-	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-			| RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK) {
-		Error_Handler();
-	}
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 /**
- * @brief RTC Initialization Function
- * @param None
- * @retval None
- */
-static void MX_RTC_Init(void) {
+  * @brief RTC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RTC_Init(void)
+{
 
-	/* USER CODE BEGIN RTC_Init 0 */
+  /* USER CODE BEGIN RTC_Init 0 */
 
-	/* USER CODE END RTC_Init 0 */
+  /* USER CODE END RTC_Init 0 */
 
-	RTC_TimeTypeDef sTime = { 0 };
-	RTC_DateTypeDef sDate = { 0 };
-	RTC_AlarmTypeDef sAlarm = { 0 };
+  RTC_TimeTypeDef sTime = {0};
+  RTC_DateTypeDef sDate = {0};
+  RTC_AlarmTypeDef sAlarm = {0};
 
-	/* USER CODE BEGIN RTC_Init 1 */
+  /* USER CODE BEGIN RTC_Init 1 */
 
-	/* USER CODE END RTC_Init 1 */
+  /* USER CODE END RTC_Init 1 */
 
-	/** Initialize RTC Only
-	 */
-	hrtc.Instance = RTC;
-	hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
-	hrtc.Init.AsynchPrediv = 127;
-	hrtc.Init.SynchPrediv = 255;
-	hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
-	hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
-	hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
-	if (HAL_RTC_Init(&hrtc) != HAL_OK) {
-		Error_Handler();
-	}
+  /** Initialize RTC Only
+  */
+  hrtc.Instance = RTC;
+  hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+  hrtc.Init.AsynchPrediv = 127;
+  hrtc.Init.SynchPrediv = 255;
+  hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+  hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+  hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+  if (HAL_RTC_Init(&hrtc) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
-	/* USER CODE BEGIN Check_RTC_BKUP */
+  /* USER CODE BEGIN Check_RTC_BKUP */
 
-	/* USER CODE END Check_RTC_BKUP */
+  /* USER CODE END Check_RTC_BKUP */
 
-	/** Initialize RTC and set the Time and Date
-	 */
-	sTime.Hours = 0x9;
-	sTime.Minutes = 0x0;
-	sTime.Seconds = 0x0;
-	sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-	sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-	if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK) {
-		Error_Handler();
-	}
-	sDate.WeekDay = RTC_WEEKDAY_THURSDAY;
-	sDate.Month = RTC_MONTH_MARCH;
-	sDate.Date = 0x28;
-	sDate.Year = 24;
+  /** Initialize RTC and set the Time and Date
+  */
+  sTime.Hours = 0x9;
+  sTime.Minutes = 0x0;
+  sTime.Seconds = 0x0;
+  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sDate.WeekDay = RTC_WEEKDAY_THURSDAY;
+  sDate.Month = RTC_MONTH_MARCH;
+  sDate.Date = 0x28;
+  sDate.Year = 0x0;
 
-	if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK) {
-		Error_Handler();
-	}
+  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
-	/** Enable the Alarm A
-	 */
-	sAlarm.AlarmTime.Hours = 0x9;
-	sAlarm.AlarmTime.Minutes = 0x15;
-	sAlarm.AlarmTime.Seconds = 0x1;
-	sAlarm.AlarmTime.SubSeconds = 0x0;
-	sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-	sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
-	sAlarm.AlarmMask = RTC_ALARMMASK_NONE;
-	sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
-	sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
-	sAlarm.AlarmDateWeekDay = 0x1;
-	sAlarm.Alarm = RTC_ALARM_A;
-	if (HAL_RTC_SetAlarm(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN RTC_Init 2 */
+  /** Enable the Alarm A
+  */
+  sAlarm.AlarmTime.Hours = 0x9;
+  sAlarm.AlarmTime.Minutes = 0x0;
+  sAlarm.AlarmTime.Seconds = 0x1;
+  sAlarm.AlarmTime.SubSeconds = 0x0;
+  sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+  sAlarm.AlarmMask = RTC_ALARMMASK_NONE;
+  sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
+  sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
+  sAlarm.AlarmDateWeekDay = 0x1;
+  sAlarm.Alarm = RTC_ALARM_A;
+  if (HAL_RTC_SetAlarm(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN RTC_Init 2 */
 
-	/* USER CODE END RTC_Init 2 */
-
-}
-
-/**
- * @brief SPI1 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_SPI1_Init(void) {
-
-	/* USER CODE BEGIN SPI1_Init 0 */
-
-	/* USER CODE END SPI1_Init 0 */
-
-	/* USER CODE BEGIN SPI1_Init 1 */
-
-	/* USER CODE END SPI1_Init 1 */
-	/* SPI1 parameter configuration*/
-	hspi1.Instance = SPI1;
-	hspi1.Init.Mode = SPI_MODE_MASTER;
-	hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-	hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-	hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-	hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-	hspi1.Init.NSS = SPI_NSS_SOFT;
-	hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
-	hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-	hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
-	hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-	hspi1.Init.CRCPolynomial = 10;
-	if (HAL_SPI_Init(&hspi1) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN SPI1_Init 2 */
-
-	/* USER CODE END SPI1_Init 2 */
+  /* USER CODE END RTC_Init 2 */
 
 }
 
 /**
- * @brief SPI2 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_SPI2_Init(void) {
+  * @brief SPI1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI1_Init(void)
+{
 
-	/* USER CODE BEGIN SPI2_Init 0 */
+  /* USER CODE BEGIN SPI1_Init 0 */
 
-	/* USER CODE END SPI2_Init 0 */
+  /* USER CODE END SPI1_Init 0 */
 
-	/* USER CODE BEGIN SPI2_Init 1 */
+  /* USER CODE BEGIN SPI1_Init 1 */
 
-	/* USER CODE END SPI2_Init 1 */
-	/* SPI2 parameter configuration*/
-	hspi2.Instance = SPI2;
-	hspi2.Init.Mode = SPI_MODE_MASTER;
-	hspi2.Init.Direction = SPI_DIRECTION_2LINES;
-	hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
-	hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
-	hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
-	hspi2.Init.NSS = SPI_NSS_SOFT;
-	hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-	hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
-	hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
-	hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-	hspi2.Init.CRCPolynomial = 10;
-	if (HAL_SPI_Init(&hspi2) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN SPI2_Init 2 */
+  /* USER CODE END SPI1_Init 1 */
+  /* SPI1 parameter configuration*/
+  hspi1.Instance = SPI1;
+  hspi1.Init.Mode = SPI_MODE_MASTER;
+  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi1.Init.NSS = SPI_NSS_SOFT;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi1.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI1_Init 2 */
 
-	/* USER CODE END SPI2_Init 2 */
-
-}
-
-/**
- * @brief USART1 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_USART1_UART_Init(void) {
-
-	/* USER CODE BEGIN USART1_Init 0 */
-
-	/* USER CODE END USART1_Init 0 */
-
-	/* USER CODE BEGIN USART1_Init 1 */
-
-	/* USER CODE END USART1_Init 1 */
-	huart1.Instance = USART1;
-	huart1.Init.BaudRate = 9600;
-	huart1.Init.WordLength = UART_WORDLENGTH_8B;
-	huart1.Init.StopBits = UART_STOPBITS_1;
-	huart1.Init.Parity = UART_PARITY_NONE;
-	huart1.Init.Mode = UART_MODE_TX_RX;
-	huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-	if (HAL_UART_Init(&huart1) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN USART1_Init 2 */
-
-	/* USER CODE END USART1_Init 2 */
+  /* USER CODE END SPI1_Init 2 */
 
 }
 
 /**
- * @brief USART2 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_USART2_UART_Init(void) {
+  * @brief SPI2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI2_Init(void)
+{
 
-	/* USER CODE BEGIN USART2_Init 0 */
+  /* USER CODE BEGIN SPI2_Init 0 */
 
-	/* USER CODE END USART2_Init 0 */
+  /* USER CODE END SPI2_Init 0 */
 
-	/* USER CODE BEGIN USART2_Init 1 */
+  /* USER CODE BEGIN SPI2_Init 1 */
 
-	/* USER CODE END USART2_Init 1 */
-	huart2.Instance = USART2;
-	huart2.Init.BaudRate = 115200;
-	huart2.Init.WordLength = UART_WORDLENGTH_8B;
-	huart2.Init.StopBits = UART_STOPBITS_1;
-	huart2.Init.Parity = UART_PARITY_NONE;
-	huart2.Init.Mode = UART_MODE_TX_RX;
-	huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-	if (HAL_UART_Init(&huart2) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN USART2_Init 2 */
+  /* USER CODE END SPI2_Init 1 */
+  /* SPI2 parameter configuration*/
+  hspi2.Instance = SPI2;
+  hspi2.Init.Mode = SPI_MODE_MASTER;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.NSS = SPI_NSS_SOFT;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI2_Init 2 */
 
-	/* USER CODE END USART2_Init 2 */
-
-}
-
-/**
- * @brief USART3 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_USART3_UART_Init(void) {
-
-	/* USER CODE BEGIN USART3_Init 0 */
-
-	/* USER CODE END USART3_Init 0 */
-
-	/* USER CODE BEGIN USART3_Init 1 */
-
-	/* USER CODE END USART3_Init 1 */
-	huart3.Instance = USART3;
-	huart3.Init.BaudRate = 115200;
-	huart3.Init.WordLength = UART_WORDLENGTH_8B;
-	huart3.Init.StopBits = UART_STOPBITS_1;
-	huart3.Init.Parity = UART_PARITY_NONE;
-	huart3.Init.Mode = UART_MODE_TX_RX;
-	huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	huart3.Init.OverSampling = UART_OVERSAMPLING_16;
-	if (HAL_UART_Init(&huart3) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN USART3_Init 2 */
-
-	/* USER CODE END USART3_Init 2 */
+  /* USER CODE END SPI2_Init 2 */
 
 }
 
 /**
- * Enable DMA controller clock
- */
-static void MX_DMA_Init(void) {
+  * @brief UART4 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_UART4_Init(void)
+{
 
-	/* DMA controller clock enable */
-	__HAL_RCC_DMA1_CLK_ENABLE();
+  /* USER CODE BEGIN UART4_Init 0 */
 
-	/* DMA interrupt init */
-	/* DMA1_Stream1_IRQn interrupt configuration */
-	HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
-	/* DMA1_Stream5_IRQn interrupt configuration */
-	HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+  /* USER CODE END UART4_Init 0 */
+
+  /* USER CODE BEGIN UART4_Init 1 */
+
+  /* USER CODE END UART4_Init 1 */
+  huart4.Instance = UART4;
+  huart4.Init.BaudRate = 115200;
+  huart4.Init.WordLength = UART_WORDLENGTH_8B;
+  huart4.Init.StopBits = UART_STOPBITS_1;
+  huart4.Init.Parity = UART_PARITY_NONE;
+  huart4.Init.Mode = UART_MODE_TX_RX;
+  huart4.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart4.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN UART4_Init 2 */
+
+  /* USER CODE END UART4_Init 2 */
 
 }
 
 /**
- * @brief GPIO Initialization Function
- * @param None
- * @retval None
- */
-static void MX_GPIO_Init(void) {
-	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
-	/* USER CODE BEGIN MX_GPIO_Init_1 */
-	/* USER CODE END MX_GPIO_Init_1 */
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
 
-	/* GPIO Ports Clock Enable */
-	__HAL_RCC_GPIOC_CLK_ENABLE();
-	__HAL_RCC_GPIOH_CLK_ENABLE();
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-	__HAL_RCC_GPIOD_CLK_ENABLE();
+  /* USER CODE BEGIN USART2_Init 0 */
 
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOA, SIM7600_PWRKEY_Pin | SIM_RTS_Pin, GPIO_PIN_RESET);
+  /* USER CODE END USART2_Init 0 */
 
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOC,
-			SD_CS_Pin | RFM95_DIO0_Pin | RFM95_DIO1_Pin | RFM95_DIO2_Pin,
-			GPIO_PIN_RESET);
+  /* USER CODE BEGIN USART2_Init 1 */
 
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOD,
-			RFM95_RS_Pin | RFM95_NSS_Pin | LED4_Pin | LED3_Pin | LED2_Pin
-					| LED1_Pin, GPIO_PIN_RESET);
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
 
-	/*Configure GPIO pins : DETECT1_Pin DETECT2_Pin DETECT3_Pin DETECT4_Pin */
-	GPIO_InitStruct.Pin = DETECT1_Pin | DETECT2_Pin | DETECT3_Pin | DETECT4_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  /* USER CODE END USART2_Init 2 */
 
-	/*Configure GPIO pin : SIM7600_PWRKEY_Pin */
-	GPIO_InitStruct.Pin = SIM7600_PWRKEY_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_PULLUP;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(SIM7600_PWRKEY_GPIO_Port, &GPIO_InitStruct);
+}
 
-	/*Configure GPIO pin : SIM_RTS_Pin */
-	GPIO_InitStruct.Pin = SIM_RTS_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(SIM_RTS_GPIO_Port, &GPIO_InitStruct);
+/**
+  * @brief USART3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART3_UART_Init(void)
+{
 
-	/*Configure GPIO pins : SD_CS_Pin RFM95_DIO0_Pin RFM95_DIO1_Pin RFM95_DIO2_Pin */
-	GPIO_InitStruct.Pin = SD_CS_Pin | RFM95_DIO0_Pin | RFM95_DIO1_Pin
-			| RFM95_DIO2_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  /* USER CODE BEGIN USART3_Init 0 */
 
-	/*Configure GPIO pins : RFM95_RS_Pin RFM95_NSS_Pin LED4_Pin LED3_Pin
-	 LED2_Pin LED1_Pin */
-	GPIO_InitStruct.Pin = RFM95_RS_Pin | RFM95_NSS_Pin | LED4_Pin | LED3_Pin
-			| LED2_Pin | LED1_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+  /* USER CODE END USART3_Init 0 */
 
-	/* USER CODE BEGIN MX_GPIO_Init_2 */
-	/* USER CODE END MX_GPIO_Init_2 */
+  /* USER CODE BEGIN USART3_Init 1 */
+
+  /* USER CODE END USART3_Init 1 */
+  huart3.Instance = USART3;
+  huart3.Init.BaudRate = 115200;
+  huart3.Init.WordLength = UART_WORDLENGTH_8B;
+  huart3.Init.StopBits = UART_STOPBITS_1;
+  huart3.Init.Parity = UART_PARITY_NONE;
+  huart3.Init.Mode = UART_MODE_TX_RX;
+  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART3_Init 2 */
+
+  /* USER CODE END USART3_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Stream1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+  /* DMA1_Stream5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+/* USER CODE BEGIN MX_GPIO_Init_1 */
+/* USER CODE END MX_GPIO_Init_1 */
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, SIM7600_PWRKEY_Pin|SIM7600_RESET_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, SD_CS_Pin|RFM95_DIO0_Pin|RFM95_DIO1_Pin|RFM95_DIO2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, RFM95_RS_Pin|RFM95_NSS_Pin|LED4_Pin|LED3_Pin
+                          |LED2_Pin|LED1_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : DETECT1_Pin DETECT2_Pin DETECT3_Pin DETECT4_Pin */
+  GPIO_InitStruct.Pin = DETECT1_Pin|DETECT2_Pin|DETECT3_Pin|DETECT4_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : SIM7600_PWRKEY_Pin */
+  GPIO_InitStruct.Pin = SIM7600_PWRKEY_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(SIM7600_PWRKEY_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : SIM7600_RESET_Pin */
+  GPIO_InitStruct.Pin = SIM7600_RESET_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(SIM7600_RESET_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : SD_CS_Pin RFM95_DIO0_Pin RFM95_DIO1_Pin RFM95_DIO2_Pin */
+  GPIO_InitStruct.Pin = SD_CS_Pin|RFM95_DIO0_Pin|RFM95_DIO1_Pin|RFM95_DIO2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : RFM95_RS_Pin RFM95_NSS_Pin LED4_Pin LED3_Pin
+                           LED2_Pin LED1_Pin */
+  GPIO_InitStruct.Pin = RFM95_RS_Pin|RFM95_NSS_Pin|LED4_Pin|LED3_Pin
+                          |LED2_Pin|LED1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+/* USER CODE BEGIN MX_GPIO_Init_2 */
+/* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
 
-
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
-void Error_Handler(void) {
-	/* USER CODE BEGIN Error_Handler_Debug */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
 	while (1) {
 	}
-	/* USER CODE END Error_Handler_Debug */
+  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT

@@ -44,8 +44,8 @@ float getCosF(ducati_typeDef *me);
 float getCurrent(ducati_typeDef *me);
 float getFrequency(ducati_typeDef *me);
 
-int16_t getAvQ(ducati_typeDef *me);
-int16_t getAvP(ducati_typeDef *me);
+uint16_t getAvQ(ducati_typeDef *me);
+uint16_t getAvP(ducati_typeDef *me);
 float getActivePower(ducati_typeDef *me);
 float getReactivePower(ducati_typeDef *me);
 

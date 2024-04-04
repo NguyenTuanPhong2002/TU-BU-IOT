@@ -56,3 +56,14 @@ THT_StatusTypeDef LORA_receiveIT(LORA_HandleTypeDef *const me, uint8_t *pBuffer,
 
 	return (*me->receiveIT)(me, pBuffer, size);
 }
+
+
+int16_t LORA_getRSSI(LORA_HandleTypeDef *const me)
+{
+	if (me == NULL)
+	{
+		return THT_ERROR;
+	}
+	return (*me->getRSSI)(me);
+}
+

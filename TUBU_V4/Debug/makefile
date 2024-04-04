@@ -70,8 +70,8 @@ all: main-build
 main-build: TUBU_V4.elf secondary-outputs
 
 # Tool invocations
-TUBU_V4.elf TUBU_V4.map: $(OBJS) $(USER_OBJS) C:\Users\skttr\OneDrive\Desktop\TU-BU-IOT\TUBU_V4\STM32F407VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "TUBU_V4.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\skttr\OneDrive\Desktop\TU-BU-IOT\TUBU_V4\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="TUBU_V4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+TUBU_V4.elf TUBU_V4.map: $(OBJS) $(USER_OBJS) C:\Users\skttr\OneDrive\Desktop\Trump\DATN\TU-BU-IOT\TUBU_V4\STM32F407VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "TUBU_V4.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\skttr\OneDrive\Desktop\Trump\DATN\TU-BU-IOT\TUBU_V4\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="TUBU_V4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -165,7 +165,7 @@ void SIM7600_PWRKEY_ON(SIM7600_HandleTypeDef *const me)
 	HAL_GPIO_WritePin(me->pwrkeyPort, me->pwrkeyPin, GPIO_PIN_SET);
 	HAL_Delay(1000UL);
 	HAL_GPIO_WritePin(me->pwrkeyPort, me->pwrkeyPin, GPIO_PIN_RESET);
-	HAL_Delay(10000UL);
+	HAL_Delay(1000UL);
 }
 
 /**
@@ -233,8 +233,8 @@ THT_StatusTypeDef SIM7600_init(SIM7600_HandleTypeDef *const me)
 	}
 
 	/* Power on and reset module */
-	SIM7600_wakeup(me);
-	SIM7600_POWER_ON(me);
+//	SIM7600_wakeup(me);
+//	SIM7600_POWER_ON(me);
 	SIM7600_RESET_ON(me);
 
 	/* Enable receive data through UART port */
@@ -383,9 +383,9 @@ void SIM7600_checkEvent(SIM7600_HandleTypeDef *const me, uint16_t size)
 
 		char *sPtr = strstr(me->parent.buffer, "\"SM\",");
 
-		if (sPtr != NULL && size >= 5u) // xxx: size?
+		if (sPtr != NULL && size >= 5u)
 		{
-			me->smsPos = atoi(sPtr + 5u);
+			me->smsPos = atoi(sPtr + 5u);// xxx: size?
 		}
 	}
 	// else if (strstr(me->parent.buffer, SIM_URC_AUDIO_STOP) != NULL)

@@ -28,7 +28,7 @@ midlib/http.o: ../midlib/http.c ../midlib/midlib.h ../midlib/wlv_def.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- ../midlib/http.h ../midlib/sim.h
+ ../midlib/http.h ../midlib/sim.h ../midlib/configID.h
 ../midlib/midlib.h:
 ../midlib/wlv_def.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -62,3 +62,4 @@ midlib/http.o: ../midlib/http.c ../midlib/midlib.h ../midlib/wlv_def.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 ../midlib/http.h:
 ../midlib/sim.h:
+../midlib/configID.h:

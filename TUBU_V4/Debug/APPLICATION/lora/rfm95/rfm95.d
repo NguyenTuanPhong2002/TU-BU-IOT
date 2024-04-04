@@ -29,11 +29,12 @@ APPLICATION/lora/rfm95/rfm95.o: ../APPLICATION/lora/rfm95/rfm95.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/APPLICATION/lora/Lora.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/midlib.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/http.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/sim.h
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/lora/lora.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/midlib.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/http.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/sim.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/configID.h
 ../APPLICATION/lora/rfm95/rfm95.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -65,8 +66,9 @@ APPLICATION/lora/rfm95/rfm95.o: ../APPLICATION/lora/rfm95/rfm95.c \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/APPLICATION/lora/Lora.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/midlib.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/http.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/sim.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/lora/lora.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/midlib.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/http.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/sim.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/configID.h:

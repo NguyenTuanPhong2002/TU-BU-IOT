@@ -35,10 +35,11 @@ APPLICATION/SD_CARD/sd.o: ../APPLICATION/SD_CARD/sd.c \
  ../Middlewares/Third_Party/FatFs/src/diskio.h \
  ../Middlewares/Third_Party/FatFs/src/ff.h ../FATFS/Target/user_diskio.h \
  ../APPLICATION/SD_CARD/fatfs_sd.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/midlib.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/http.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/sim.h
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/midlib.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/http.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/sim.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/configID.h
 ../APPLICATION/SD_CARD/sd.h:
 ../FATFS/App/fatfs.h:
 ../Middlewares/Third_Party/FatFs/src/ff.h:
@@ -79,7 +80,8 @@ APPLICATION/SD_CARD/sd.o: ../APPLICATION/SD_CARD/sd.c \
 ../Middlewares/Third_Party/FatFs/src/ff.h:
 ../FATFS/Target/user_diskio.h:
 ../APPLICATION/SD_CARD/fatfs_sd.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/midlib.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/http.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/sim.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/midlib.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/http.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/sim.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/configID.h:

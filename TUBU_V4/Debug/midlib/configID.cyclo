@@ -1,0 +1,5 @@
+../midlib/configID.c:13:19:CFG_setDeviceID	5
+../midlib/configID.c:33:19:CFG_setDeviceMaster	5
+../midlib/configID.c:53:19:CFG_writeEEPROM	10
+../midlib/configID.c:121:19:CFG_getID	2
+../midlib/configID.c:134:19:CFG_getMaster	2

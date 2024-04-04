@@ -9,7 +9,7 @@
 #define INC_RFM95_H_
 
 #include "main.h"
-#include "Lora.h"
+#include "lora.h"
 #include "stm32f4xx_hal.h"
 #include <stdint.h>
 /*!

@@ -138,7 +138,7 @@ float getFrequency(ducati_typeDef *me)
 	return ((uint16_t)me->buffer[3] << 8) | (uint16_t)me->buffer[4];
 }
 
-int16_t getAvQ(ducati_typeDef *me)
+uint16_t getAvQ(ducati_typeDef *me)
 {
 	uint8_t queryFrame[8] = {0x01, 0x03, 0x00, 0x53, 0x00, 0x02, 0x00, 0x00};
 	uint16_t reponseCRC = calculateCRC(queryFrame, sizeof(queryFrame) - 2u);
@@ -150,7 +150,7 @@ int16_t getAvQ(ducati_typeDef *me)
 	return ((uint16_t)me->buffer[3] << 8) | (uint16_t)me->buffer[4];
 }
 
-int16_t getAvP(ducati_typeDef *me)
+uint16_t getAvP(ducati_typeDef *me)
 {
 	uint8_t queryFrame[8] = {0x01, 0x03, 0x00, 0x23, 0x00, 0x02, 0x00, 0x00};
 	uint16_t reponseCRC = calculateCRC(queryFrame, sizeof(queryFrame) - 2u);

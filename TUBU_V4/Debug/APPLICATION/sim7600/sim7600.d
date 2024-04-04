@@ -29,10 +29,11 @@ APPLICATION/sim7600/sim7600.o: ../APPLICATION/sim7600/sim7600.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/midlib.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/http.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/sim.h
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/midlib.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/http.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/sim.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/configID.h
 ../APPLICATION/sim7600/sim7600.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -63,7 +64,8 @@ APPLICATION/sim7600/sim7600.o: ../APPLICATION/sim7600/sim7600.c \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/midlib.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/http.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/sim.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/midlib.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/http.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/sim.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/configID.h:

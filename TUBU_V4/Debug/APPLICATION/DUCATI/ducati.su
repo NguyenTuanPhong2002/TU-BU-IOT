@@ -5,8 +5,8 @@
 ../APPLICATION/DUCATI/ducati.c:105:7:getCosF	32	static
 ../APPLICATION/DUCATI/ducati.c:117:7:getCurrent	32	static
 ../APPLICATION/DUCATI/ducati.c:129:7:getFrequency	32	static
-../APPLICATION/DUCATI/ducati.c:141:9:getAvQ	32	static
-../APPLICATION/DUCATI/ducati.c:153:9:getAvP	32	static
+../APPLICATION/DUCATI/ducati.c:141:10:getAvQ	32	static
+../APPLICATION/DUCATI/ducati.c:153:10:getAvP	32	static
 ../APPLICATION/DUCATI/ducati.c:165:7:getActivePower	32	static
 ../APPLICATION/DUCATI/ducati.c:177:7:getReactivePower	32	static
 ../APPLICATION/DUCATI/ducati.c:203:10:getCoilStatus	32	static

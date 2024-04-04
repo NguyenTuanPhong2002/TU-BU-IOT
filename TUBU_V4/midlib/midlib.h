@@ -21,5 +21,6 @@
 //#include "sms.h"
 #include "sim.h"
 //#include "moniter.h"
+#include "configID.h"
 
 #endif /* MIDDLE_LIBRARIES_MIDLIB_H_ */

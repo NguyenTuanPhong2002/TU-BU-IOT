@@ -67,12 +67,8 @@ void Error_Handler(void);
 #define DETECT4_GPIO_Port GPIOC
 #define SIM7600_PWRKEY_Pin GPIO_PIN_0
 #define SIM7600_PWRKEY_GPIO_Port GPIOA
-#define SIM_TX_Pin GPIO_PIN_2
-#define SIM_TX_GPIO_Port GPIOA
-#define SIM_RX_Pin GPIO_PIN_3
-#define SIM_RX_GPIO_Port GPIOA
-#define SIM_RTS_Pin GPIO_PIN_4
-#define SIM_RTS_GPIO_Port GPIOA
+#define SIM7600_RESET_Pin GPIO_PIN_4
+#define SIM7600_RESET_GPIO_Port GPIOA
 #define SD_SCK_Pin GPIO_PIN_5
 #define SD_SCK_GPIO_Port GPIOA
 #define SD_MISO_Pin GPIO_PIN_6

@@ -33,15 +33,17 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FatFs/src/ff_gen_drv.h \
  ../Middlewares/Third_Party/FatFs/src/diskio.h \
  ../Middlewares/Third_Party/FatFs/src/ff.h ../FATFS/Target/user_diskio.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/APPLICATION/DUCATI/ducati.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/APPLICATION/lora/lora.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/midlib.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/http.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/sim.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/APPLICATION/sim7600/sim7600.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/APPLICATION/SD_CARD/sd.h \
- C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/APPLICATION/SD_CARD/fatfs_sd.h
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/DUCATI/ducati.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/lora/rfm95/rfm95.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/lora/lora.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/midlib.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/http.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/sim.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/configID.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/sim7600/sim7600.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/SD_CARD/sd.h \
+ C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/SD_CARD/fatfs_sd.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -80,12 +82,14 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Middlewares/Third_Party/FatFs/src/diskio.h:
 ../Middlewares/Third_Party/FatFs/src/ff.h:
 ../FATFS/Target/user_diskio.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/APPLICATION/DUCATI/ducati.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/APPLICATION/lora/lora.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/midlib.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/http.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/midlib/sim.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/APPLICATION/sim7600/sim7600.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/APPLICATION/SD_CARD/sd.h:
-C:/Users/skttr/OneDrive/Desktop/TU-BU-IOT/TUBU_V4/APPLICATION/SD_CARD/fatfs_sd.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/DUCATI/ducati.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/lora/rfm95/rfm95.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/lora/lora.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/midlib.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/wlv_def.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/http.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/sim.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/midlib/configID.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/sim7600/sim7600.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/SD_CARD/sd.h:
+C:/Users/skttr/OneDrive/Desktop/Trump/DATN/TU-BU-IOT/TUBU_V4/APPLICATION/SD_CARD/fatfs_sd.h:
