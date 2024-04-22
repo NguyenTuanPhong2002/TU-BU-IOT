@@ -1,0 +1,6 @@
+../lora/lora.c:11:19:LORA_init	16	static
+../lora/lora.c:20:19:LORA_transmit	32	static
+../lora/lora.c:30:19:LORA_receivePolling	32	static
+../lora/lora.c:40:19:LORA_startReceiveIT	16	static
+../lora/lora.c:50:19:LORA_receiveIT	24	static
+../lora/lora.c:61:9:LORA_getRSSI	16	static

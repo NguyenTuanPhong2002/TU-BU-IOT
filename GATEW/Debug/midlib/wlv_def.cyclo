@@ -1,0 +1,4 @@
+../midlib/wlv_def.c:21:6:THT_copyStringUntilToken	8
+../midlib/wlv_def.c:75:19:THT_convertDoubleToHex	3
+../midlib/wlv_def.c:95:19:WLV_convertFloatToHex	3
+../midlib/wlv_def.c:114:9:THT_CRC8XOR	2
